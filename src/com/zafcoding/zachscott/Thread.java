@@ -57,6 +57,7 @@ public class Thread implements Runnable {
 		if (info.getState() == ServerState.In_Game) {
 			for (Player player : info.getPlayers()) {
 				PlayerProfile pp = info.getPP(player);
+				pp.getPlayer().setExp(0.0f);
 				pp.getPlayer().setFoodLevel(20);
 				if (pp.isPower()) {
 					player.setLevel(60 - pp.getPowerTime());

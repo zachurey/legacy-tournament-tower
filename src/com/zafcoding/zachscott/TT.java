@@ -42,8 +42,8 @@ public class TT extends JavaPlugin {
 	public static PowerUp power;
 	public static Update update;
 	public static UpdatePlayer updatePlayer;
-	//public static EffectLib lib;
-	//public static EffectManager man;
+	// public static EffectLib lib;
+	// public static EffectManager man;
 	boolean debug = true;
 	public boolean mysql = true;
 	public static ArrayList<String> vips = new ArrayList<String>();
@@ -53,7 +53,7 @@ public class TT extends JavaPlugin {
 	public MySQL MySQL = new MySQL(this, "23.229.139.232", "3306", "Server",
 			"ttPlugin", "DoubleTT!");
 	public java.sql.Connection c = null;
-	
+
 	@Override
 	public void onEnable() {
 		System.out.print("[TT] Enabling Tornament Tower v." + version);
@@ -63,11 +63,11 @@ public class TT extends JavaPlugin {
 		power = new PowerUp();
 		update = new Update();
 		updatePlayer = new UpdatePlayer();
-		//lib = EffectLib.instance();
-		//man = new EffectManager(lib);
+		// lib = EffectLib.instance();
+		// man = new EffectManager(lib);
 		try {
 			updatePlayer.updateMods();
-			//updatePlayer.updateVIPs();
+			// updatePlayer.updateVIPs();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -86,7 +86,7 @@ public class TT extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		System.out.print("[TT] Disabling Tornament Tower v." + version);
-		//man.disposeOnTermination();
+		// man.disposeOnTermination();
 		System.out.print("[TT] Disabled Tornament Tower v." + version);
 	}
 
@@ -281,6 +281,7 @@ public class TT extends JavaPlugin {
 						"%player%", p.getDisplayName());
 				info.broadCast(ChatColor.AQUA + "" + mess);
 				info.getPP(p).setGL();
+				return true;
 			}
 			if (label.equalsIgnoreCase("stats")) {
 				p.sendMessage(ChatColor.GOLD + "===Tournament Tower:"
@@ -462,28 +463,6 @@ public class TT extends JavaPlugin {
 				info.getPP(p).setGG();
 				return true;
 			}
-			if (label.equalsIgnoreCase("gl")) {
-				if (info.isPronePlayer(p)) {
-					int rand = game.getRandom(1, 6);
-					String mess = getConfig().getString("Goodluck" + rand)
-							.replace("%player%", p.getDisplayName());
-					info.broadCast(ChatColor.AQUA + "" + mess);
-					return true;
-				}
-				int rand = game.getRandom(1, 6);
-				String mess = getConfig().getString("Goodluck" + rand).replace(
-						"%player%", p.getDisplayName());
-				info.broadCast(ChatColor.AQUA + "" + mess);
-				info.getPP(p).setGG();
-				return true;
-			}
-			if (label.equalsIgnoreCase("spawn")) {
-				if (info.getState() == ServerState.Pre_Game) {
-					p.teleport(p.getWorld().getSpawnLocation());
-					p.sendMessage(pre + " You have teleport to the spawn!");
-					return true;
-				}
-			}
 			if (label.equalsIgnoreCase("tt")) {
 				if (args.length == 0) {
 					if (p.hasPermission("tt.admin")) {
@@ -515,17 +494,30 @@ public class TT extends JavaPlugin {
 							return true;
 						}
 					}
+					if (args[0].equalsIgnoreCase("force")) {
+						if(p.isOp() || p.hasPermission("tt.forcestart")){
+						p.sendMessage(ChatColor.GRAY + "Starting the game!");
+						info.setState(ServerState.In_Game);
+						info.setTime(0);
+						game.start();
+						return true;
+						}
+					}
 					if (args[0].equalsIgnoreCase("prone")) {
-						if (info.isPronePlayer(p)) {
-							info.removePronePlayer(p);
-							p.sendMessage(pre + " Prone mode has been "
-									+ ChatColor.RED + "disabled!");
-							return true;
+						if (p.isOp() || p.hasPermission("tt.prone")) {
+							if (info.isPronePlayer(p)) {
+								info.removePronePlayer(p);
+								p.sendMessage(pre + " Prone mode has been "
+										+ ChatColor.RED + "disabled!");
+								return true;
+							} else {
+								info.addPronePlayer(p);
+								p.sendMessage(pre + " Prone mode has been "
+										+ ChatColor.GREEN + "enabled!!");
+								return true;
+							}
 						} else {
-							info.addPronePlayer(p);
-							p.sendMessage(pre + " Prone mode has been "
-									+ ChatColor.GREEN + "enabled!!");
-							return true;
+							p.sendMessage("Do not got the perms!");
 						}
 					}
 					if (args[0].equalsIgnoreCase("playerprofile")) {
