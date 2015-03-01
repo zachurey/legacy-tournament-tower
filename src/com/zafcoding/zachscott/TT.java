@@ -53,7 +53,9 @@ public class TT extends JavaPlugin {
 	public MySQL MySQL = new MySQL(this, "23.229.139.232", "3306", "Server",
 			"ttPlugin", "DoubleTT!");
 	public java.sql.Connection c = null;
-
+	//Test
+	
+	
 	@Override
 	public void onEnable() {
 		System.out.print("[TT] Enabling Tornament Tower v." + version);
