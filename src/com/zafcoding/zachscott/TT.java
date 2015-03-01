@@ -44,8 +44,8 @@ public class TT extends JavaPlugin {
 	public static UpdatePlayer updatePlayer;
 	// public static EffectLib lib;
 	// public static EffectManager man;
-	boolean debug = false;
-	public boolean mysql = true;
+	boolean debug = true;
+	public boolean mysql = false;
 	public static ArrayList<String> vips = new ArrayList<String>();
 	public static ArrayList<String> bannedplayers = new ArrayList<String>();
 	public static HashMap<String, String> mods = new HashMap<String, String>();
