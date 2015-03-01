@@ -97,10 +97,10 @@ public class LobbyListiners implements Listener {
 					+ "> "
 					+ ChatColor.translateAlternateColorCodes('&',
 							e.getMessage()));
-			Effect effect = new WarpEffect(tt.man);
-			effect.setEntity(e.getPlayer()); 
-			effect.start();
-			info.getPP(e.getPlayer()).setEffect(effect);
+			//Effect effect = new WarpEffect(tt.man);
+			//effect.setEntity(e.getPlayer()); 
+			//effect.start();
+			//info.getPP(e.getPlayer()).setEffect(effect);
 			return;
 		}
 		if (e.getPlayer().getDisplayName().equalsIgnoreCase("zackscott")) {

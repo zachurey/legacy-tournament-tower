@@ -42,8 +42,8 @@ public class TT extends JavaPlugin {
 	public static PowerUp power;
 	public static Update update;
 	public static UpdatePlayer updatePlayer;
-	public static EffectLib lib;
-	public static EffectManager man;
+	//public static EffectLib lib;
+	//public static EffectManager man;
 	boolean debug = true;
 	public boolean mysql = true;
 	public static ArrayList<String> vips = new ArrayList<String>();
@@ -53,8 +53,6 @@ public class TT extends JavaPlugin {
 	public MySQL MySQL = new MySQL(this, "23.229.139.232", "3306", "Server",
 			"ttPlugin", "DoubleTT!");
 	public java.sql.Connection c = null;
-	//Test
-	
 	
 	@Override
 	public void onEnable() {
@@ -65,8 +63,8 @@ public class TT extends JavaPlugin {
 		power = new PowerUp();
 		update = new Update();
 		updatePlayer = new UpdatePlayer();
-		lib = EffectLib.instance();
-		man = new EffectManager(lib);
+		//lib = EffectLib.instance();
+		//man = new EffectManager(lib);
 		try {
 			updatePlayer.updateMods();
 			//updatePlayer.updateVIPs();
@@ -88,7 +86,7 @@ public class TT extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		System.out.print("[TT] Disabling Tornament Tower v." + version);
-		man.disposeOnTermination();
+		//man.disposeOnTermination();
 		System.out.print("[TT] Disabled Tornament Tower v." + version);
 	}
 
