@@ -1,0 +1,10 @@
+name: TT
+version: 2.0
+main: com.zafcoding.zachscott.TT
+author: Legostarwarszach
+commands:
+    tt:
+    spawn:
+    gl:
+    gg:
+    setspawn:
