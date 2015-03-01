@@ -502,6 +502,14 @@ public class TT extends JavaPlugin {
 						game.start();
 						return true;
 						}
+					}if (args[0].equalsIgnoreCase("finish")) {
+						if(p.isOp() || p.hasPermission("tt.forceend")){
+						p.sendMessage(ChatColor.GRAY + "Stopping the game!");
+						info.setState(ServerState.In_Game);
+						info.setTime(0);
+						game.start();
+						return true;
+						}
 					}
 					if (args[0].equalsIgnoreCase("prone")) {
 						if (p.isOp() || p.hasPermission("tt.prone")) {
@@ -606,15 +614,6 @@ public class TT extends JavaPlugin {
 								+ " The deaths for the player "
 								+ pp.getPlayer().getDisplayName()
 								+ " has been set to " + pp.getDeaths());
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("setdone")) {
-						game.endGame(Bukkit.getPlayer(args[1]));
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("power")) {
-						Player po = Bukkit.getPlayer(args[1]);
-						power.addPowerUp(po);
 						return true;
 					}
 				}
