@@ -53,15 +53,6 @@ public class GameLisitner implements Listener {
 				tp.setKills(tp.getKills() + 1);
 				tp.setTotalKill(tp.getTotalKill() + 1);
 				game.killCheck(tp);
-				try {
-					update.setKills(tp.getPlayer(),
-							update.getKill(tp.getPlayer()) + 1);
-					update.setDeath(pp.getPlayer(),
-							update.getDeath(pp.getPlayer()) + 1);
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 				return;
 			} else {
 				tt.debugMsg("The instance of the killer is "

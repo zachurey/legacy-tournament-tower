@@ -106,6 +106,12 @@ public class Game {
 		PlayerProfile mostk = null;
 		PlayerProfile mostd = null;
 		tt.debugMsg("The game is ending!");
+		try {
+			update.updateStats();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		/*try {
 			int wincount = update.getWin(winner);
 			update.setWin(winner, wincount + 1);
@@ -116,6 +122,7 @@ public class Game {
 		info.setState(ServerState.Post_Game);
 		info.broadCast(tt.pre + " Tournament Tower is over!");
 		info.broadCast(ChatColor.YELLOW + "============");
+		info.broadCast(ChatColor.GRAY + "Updating player stats so expect lag...");
 		info.broadCast(tt.pre + ChatColor.YELLOW + " Congrats to the winner "
 				+ ChatColor.GREEN + winner.getDisplayName() + ChatColor.GOLD
 				+ "!");

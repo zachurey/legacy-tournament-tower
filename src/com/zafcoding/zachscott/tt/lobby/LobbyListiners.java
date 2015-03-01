@@ -286,7 +286,7 @@ public class LobbyListiners implements Listener {
 			if (info.isPronePlayer((Player) en)) {
 				return;
 			}
-			if (!(info.getState() == ServerState.In_Game || info.getState() == ServerState.Post_Game)
+			if (!(info.getState() == ServerState.In_Game)
 					|| info.pvp == false) {
 				e.setCancelled(true);
 			}

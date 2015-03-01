@@ -44,7 +44,7 @@ public class TT extends JavaPlugin {
 	public static UpdatePlayer updatePlayer;
 	// public static EffectLib lib;
 	// public static EffectManager man;
-	boolean debug = true;
+	boolean debug = false;
 	public boolean mysql = true;
 	public static ArrayList<String> vips = new ArrayList<String>();
 	public static ArrayList<String> bannedplayers = new ArrayList<String>();
@@ -287,51 +287,6 @@ public class TT extends JavaPlugin {
 				p.sendMessage(ChatColor.GOLD + "===Tournament Tower:"
 						+ ChatColor.WHITE + p.getDisplayName() + ChatColor.GOLD
 						+ "===");
-				try {
-					p.sendMessage(ChatColor.AQUA + "Wins: " + update.getWin(p));
-				} catch (SQLException e) {
-					p.sendMessage(ChatColor.AQUA + "Wins: 0");
-					e.printStackTrace();
-				}
-				try {
-					p.sendMessage(ChatColor.AQUA + "Kills: "
-							+ update.getKill(p));
-				} catch (SQLException e) {
-					p.sendMessage(ChatColor.AQUA + "Kills: 0");
-					e.printStackTrace();
-				}
-				try {
-					p.sendMessage(ChatColor.AQUA + "Deaths: "
-							+ update.getDeath(p));
-				} catch (SQLException e) {
-					p.sendMessage(ChatColor.AQUA + "Deaths: 0");
-					e.printStackTrace();
-				}try {
-					p.sendMessage(ChatColor.AQUA + "Wins: "
-							+ update.getWin(p));
-				} catch (SQLException e) {
-					p.sendMessage(ChatColor.AQUA + "Wins: 0");
-					e.printStackTrace();
-				}
-				try {
-					if (update.getDeath(p) == 0) {
-						p.sendMessage(ChatColor.AQUA + "Kill Death Ratio: "
-								+ update.getKill(p));
-						return true;
-					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
-					p.sendMessage(ChatColor.AQUA + "Kill Death Ratio: "
-							+ update.getKill(p) / update.getDeath(p));
-					return true;
-				} catch (SQLException e) {
-					p.sendMessage(ChatColor.AQUA + "Kill Death Ratio: 0.0");
-					e.printStackTrace();
-					return true;
-				}
 				/*
 				 * try { p.sendMessage(ChatColor.AQUA + "Win Played Ratio: " +
 				 * update.getWin(p) / update.getMatchFinish(p)); } catch
@@ -602,12 +557,6 @@ public class TT extends JavaPlugin {
 								+ pp.getPlayer().getDisplayName()
 								+ " has been set to " + pp.getKills());
 						game.killCheck(pp);
-						try {
-							update.setKills(pp.getPlayer(),
-									update.getKill(pp.getPlayer()) + 1);
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("setdeath")) {

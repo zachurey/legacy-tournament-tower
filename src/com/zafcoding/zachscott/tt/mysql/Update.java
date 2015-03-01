@@ -6,11 +6,14 @@ import java.sql.Statement;
 
 import org.bukkit.entity.Player;
 
+import com.zafcoding.zachscott.Info;
+import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
 
 public class Update {
 
 	TT tt = TT.tt;
+	Info info = TT.info;
 
 	public boolean isPlayer(Player player) {
 		try {
@@ -21,7 +24,7 @@ public class Update {
 	}
 
 	public boolean gotConnection() {
-		return false;
+		return tt.c != null;
 	}
 
 	private void Connect() {
@@ -44,14 +47,18 @@ public class Update {
 	}
 
 	private void Close() {
-		try {
-			tt.c.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 	}
 
+	public void updateStats() throws SQLException{
+		for(Player p : info.getPlayers()){
+			PlayerProfile pp = info.getPP(p);
+			setKills(p, getKill(p) + pp.getTotalKill());
+			setDeath(p, getDeath(p) + pp.getTotalDeaths());
+		}
+		tt.c.close();
+	}
+	
 	private boolean aisPlayer(Player player) throws SQLException {
 		boolean is = false;
 		if (!tt.isMySQL()) {
@@ -115,7 +122,7 @@ public class Update {
 		Close();
 	}
 
-	public int getKill(Player player) throws SQLException {
+	private int getKill(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -133,7 +140,7 @@ public class Update {
 		return get;
 	}
 
-	public void setKills(Player player, int i) throws SQLException {
+	private void setKills(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -148,7 +155,7 @@ public class Update {
 		Close();
 	}
 
-	public int getDeath(Player player) throws SQLException {
+	private int getDeath(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -166,7 +173,7 @@ public class Update {
 		return get;
 	}
 
-	public void setDeath(Player player, int i) throws SQLException {
+	private void setDeath(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -181,7 +188,7 @@ public class Update {
 		Close();
 	}
 
-	public int getWin(Player player) throws SQLException {
+	private int getWin(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -201,7 +208,7 @@ public class Update {
 		return get;
 	}
 
-	public void setWin(Player player, int i) throws SQLException {
+	private void setWin(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -216,7 +223,7 @@ public class Update {
 		Close();
 	}
 
-	public int getMatchStart(Player player) throws SQLException {
+	private int getMatchStart(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -234,7 +241,7 @@ public class Update {
 		return get;
 	}
 
-	public void setMatchStart(Player player, int i) throws SQLException {
+	private void setMatchStart(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -249,7 +256,7 @@ public class Update {
 		Close();
 	}
 
-	public int getMatchFinish(Player player) throws SQLException {
+	private int getMatchFinish(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -267,7 +274,7 @@ public class Update {
 		return get;
 	}
 
-	public void setMatchFinish(Player player, int i) throws SQLException {
+	private void setMatchFinish(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
