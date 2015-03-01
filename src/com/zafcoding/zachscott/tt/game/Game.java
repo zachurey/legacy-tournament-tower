@@ -64,11 +64,10 @@ public class Game {
 		info.cangg = false;
 		info.cangl = false;
 		for (Player pp : info.getPlayers()) {
-			/*try {
-				update.setMatchStart(pp, update.getMatchStart(pp) + 1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}*/
+			/*
+			 * try { update.setMatchStart(pp, update.getMatchStart(pp) + 1); }
+			 * catch (SQLException e) { e.printStackTrace(); }
+			 */
 			info.p1++;
 			pp.setFlying(false);
 			pp.teleport(tt.getSpawn(info.world, 1, info.getNext(1)));
@@ -107,12 +106,13 @@ public class Game {
 		PlayerProfile mostk = null;
 		PlayerProfile mostd = null;
 		tt.debugMsg("The game is ending!");
-		try {
-			update.setWin(winner, update.getWin(winner) + 1);
-		} catch (SQLException e) {
+		/*try {
+			int wincount = update.getWin(winner);
+			update.setWin(winner, wincount + 1);
+		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			e1.printStackTrace();
+		}*/
 		info.setState(ServerState.Post_Game);
 		info.broadCast(tt.pre + " Tournament Tower is over!");
 		info.broadCast(ChatColor.YELLOW + "============");
@@ -121,13 +121,13 @@ public class Game {
 				+ "!");
 		info.broadCast(ChatColor.GREEN + "Do /gg to be a good sport!");
 		for (Player ppp : info.getPlayers()) {
-			try {
+			/*try {
 				update.setMatchFinish(ppp, update.getMatchFinish(ppp) + 1);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			ppp.teleport(tt.getSpawn(info.world, 0, 0));
+			}*/
+			ppp.teleport(ppp.getWorld().getSpawnLocation());
 			PlayerProfile pq = info.getPP(ppp);
 			PlayerProfile ppq = null;
 			if (mostk == null) {

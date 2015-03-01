@@ -306,6 +306,12 @@ public class TT extends JavaPlugin {
 				} catch (SQLException e) {
 					p.sendMessage(ChatColor.AQUA + "Deaths: 0");
 					e.printStackTrace();
+				}try {
+					p.sendMessage(ChatColor.AQUA + "Wins: "
+							+ update.getWin(p));
+				} catch (SQLException e) {
+					p.sendMessage(ChatColor.AQUA + "Wins: 0");
+					e.printStackTrace();
 				}
 				try {
 					if (update.getDeath(p) == 0) {
@@ -505,6 +511,7 @@ public class TT extends JavaPlugin {
 					}if (args[0].equalsIgnoreCase("finish")) {
 						if(p.isOp() || p.hasPermission("tt.forceend")){
 						p.sendMessage(ChatColor.GRAY + "Stopping the game!");
+						debugMsg("End player is " + (p != null));
 						game.endGame(p);
 						return true;
 						}

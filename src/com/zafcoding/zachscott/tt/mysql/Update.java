@@ -190,6 +190,8 @@ public class Update {
 			Connect();
 		}
 		Statement statement = tt.c.createStatement();
+		tt.debugMsg("SELECT * FROM TTPlayer WHERE UUID = '"
+				+ player.getUniqueId() + "';");
 		ResultSet res = statement
 				.executeQuery("SELECT * FROM TTPlayer WHERE UUID = '"
 						+ player.getUniqueId() + "';");
