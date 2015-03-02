@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
@@ -341,6 +342,13 @@ public class LobbyListiners implements Listener {
 	@EventHandler
 	public void onBlockForm(BlockFormEvent e) {
 		if (e.getBlock().getType() == Material.ICE) {
+			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onBlockForm(EntityDamageEvent e) {
+		if(!(info.getState() == ServerState.In_Game)){
 			e.setCancelled(true);
 		}
 	}

@@ -136,7 +136,7 @@ public class PowerUp {
 						+ ") A power has been added to the player "
 						+ po.getDisplayName().toString());
 				ItemStack is = new ItemStack(Material.CAKE);
-				is.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+				is.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
 				po.getInventory().addItem(is);
 				po.sendMessage(ChatColor.LIGHT_PURPLE + "You got a lying cake!");
 			}

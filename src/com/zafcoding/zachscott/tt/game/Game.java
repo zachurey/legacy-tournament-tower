@@ -64,7 +64,7 @@ public class Game {
 		info.setState(ServerState.In_Game);
 		info.cangg = false;
 		info.cangl = false;
-		for(Entity ent : tt.cats){
+		for (Entity ent : tt.cats) {
 			ent.remove();
 		}
 		for (Player pp : info.getPlayers()) {
@@ -110,34 +110,30 @@ public class Game {
 		PlayerProfile mostk = null;
 		PlayerProfile mostd = null;
 		tt.debugMsg("The game is ending!");
-		/*try {
-			update.updateStats();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		/*try {
-			int wincount = update.getWin(winner);
-			update.setWin(winner, wincount + 1);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
+		/*
+		 * try { update.updateStats(); } catch (SQLException e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); }
+		 */
+		/*
+		 * try { int wincount = update.getWin(winner); update.setWin(winner,
+		 * wincount + 1); } catch (SQLException e1) { // TODO Auto-generated
+		 * catch block e1.printStackTrace(); }
+		 */
 		info.setState(ServerState.Post_Game);
 		info.broadCast(tt.pre + " Tournament Tower is over!");
 		info.broadCast(ChatColor.YELLOW + "============");
-		info.broadCast(ChatColor.GRAY + "Updating player stats so expect lag...");
+		info.broadCast(ChatColor.GRAY
+				+ "Updating player stats so expect lag...");
 		info.broadCast(tt.pre + ChatColor.YELLOW + " Congrats to the winner "
 				+ ChatColor.GREEN + winner.getDisplayName() + ChatColor.GOLD
 				+ "!");
 		info.broadCast(ChatColor.GREEN + "Do /gg to be a good sport!");
 		for (Player ppp : info.getPlayers()) {
-			/*try {
-				update.setMatchFinish(ppp, update.getMatchFinish(ppp) + 1);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			/*
+			 * try { update.setMatchFinish(ppp, update.getMatchFinish(ppp) + 1);
+			 * } catch (SQLException e) { // TODO Auto-generated catch block
+			 * e.printStackTrace(); }
+			 */
 			ppp.teleport(ppp.getWorld().getSpawnLocation());
 			PlayerProfile pq = info.getPP(ppp);
 			PlayerProfile ppq = null;
@@ -153,6 +149,10 @@ public class Game {
 			if (mostd.getTotalDeaths() < pq.getTotalDeaths()) {
 				mostd = pq;
 			}
+			ppp.getPlayer().sendMessage(
+					ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "You had "
+							+ pq.getKills() + " and " + pq.getDeaths()
+							+ " deaths!");
 		}
 		info.broadCast(tt.pre + ChatColor.YELLOW + " Most kills: "
 				+ ChatColor.AQUA + mostk.getPlayer().getDisplayName() + " ("
@@ -167,7 +167,8 @@ public class Game {
 					public void run() {
 						if (done1 == true) {
 							for (Player p1 : Bukkit.getOnlinePlayers()) {
-								p1.kickPlayer(ChatColor.RED
+								p1.kickPlayer("[" + ChatColor.BOLD + ChatColor.GOLD
+										+ "Tournament Tower" + ChatColor.RESET + "]\n" + ChatColor.RED
 										+ "The server is restarting... join again in a minute!");
 							}
 							info.setState(ServerState.Resetting);
