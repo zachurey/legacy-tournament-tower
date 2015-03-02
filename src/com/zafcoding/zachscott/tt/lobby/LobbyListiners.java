@@ -2,13 +2,12 @@ package com.zafcoding.zachscott.tt.lobby;
 
 import java.sql.SQLException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -17,19 +16,18 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,9 +37,6 @@ import com.zafcoding.zachscott.Info.ServerState;
 import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
 import com.zafcoding.zachscott.tt.mysql.Update;
-
-import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.effect.WarpEffect;
 
 public class LobbyListiners implements Listener {
 
@@ -55,6 +50,10 @@ public class LobbyListiners implements Listener {
 		if (tt.bannedplayers.contains(e.getName())) {
 			e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
 					ChatColor.YELLOW + "You have been banned!");
+			return;
+		}
+		if (tt.mods.containsKey(e.getName())
+				|| e.getName().equalsIgnoreCase("legostarwarszach")) {
 			return;
 		}
 		if (info.getState() == ServerState.In_Game
@@ -86,23 +85,6 @@ public class LobbyListiners implements Listener {
 
 	@EventHandler
 	public void PlayerChat(AsyncPlayerChatEvent e) {
-		if (e.getPlayer().getDisplayName().equalsIgnoreCase("legostarwarszach")) {
-			e.setFormat(ChatColor.WHITE
-					+ "["
-					+ /* Color.fromBGR(233, 142, 255) */ChatColor.AQUA
-					+ "Developer"
-					+ ChatColor.WHITE
-					+ "]<"
-					+ e.getPlayer().getDisplayName()
-					+ "> "
-					+ ChatColor.translateAlternateColorCodes('&',
-							e.getMessage()));
-			//Effect effect = new WarpEffect(tt.man);
-			//effect.setEntity(e.getPlayer()); 
-			//effect.start();
-			//info.getPP(e.getPlayer()).setEffect(effect);
-			return;
-		}
 		if (e.getPlayer().getDisplayName().equalsIgnoreCase("zackscott")) {
 			e.setFormat(ChatColor.WHITE
 					+ "["
@@ -146,6 +128,18 @@ public class LobbyListiners implements Listener {
 						+ ChatColor.translateAlternateColorCodes('&',
 								e.getMessage()));
 				return;
+			} else {
+				e.setFormat(ChatColor.WHITE
+						+ "["
+						+ ChatColor.DARK_AQUA
+						+ ""
+						+ tt.mods.get(e.getPlayer().getDisplayName())
+						+ ChatColor.WHITE
+						+ "]<"
+						+ e.getPlayer().getDisplayName()
+						+ "> "
+						+ ChatColor.translateAlternateColorCodes('&',
+								e.getMessage()));
 			}
 		}
 		if (tt.vips.contains(e.getPlayer().getDisplayName())) {
@@ -170,7 +164,10 @@ public class LobbyListiners implements Listener {
 		e.getPlayer().setMaxHealth(40);
 		e.getPlayer().setLevel(0);
 		info.addPlayer(e.getPlayer());
-		e.setJoinMessage(ChatColor.GOLD + "You have joined the game!");
+		e.setJoinMessage(ChatColor.GOLD + "" + e.getPlayer().getDisplayName()
+				+ "" + ChatColor.WHITE + " has joined the game!"
+				+ ChatColor.YELLOW + " (" + info.getPlayerCount() + "/"
+				+ tt.getMaxPlayer() + ")");
 		e.getPlayer().setGameMode(GameMode.ADVENTURE);
 		e.getPlayer().getInventory().setHelmet(new ItemStack(Material.AIR));
 		e.getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
@@ -224,11 +221,13 @@ public class LobbyListiners implements Listener {
 			if (hp.getLevel() == 4) {
 				info.p4--;
 			}
-			if(hp.getEffect() != null){
+			if (hp.getEffect() != null) {
 				hp.getEffect().cancel();
 				hp.setEffect(null);
 			}
 		}
+		e.setQuitMessage(ChatColor.GRAY + "" + e.getPlayer().getDisplayName()
+				+ " has quit!");
 	}
 
 	@EventHandler
@@ -286,8 +285,7 @@ public class LobbyListiners implements Listener {
 			if (info.isPronePlayer((Player) en)) {
 				return;
 			}
-			if (!(info.getState() == ServerState.In_Game)
-					|| info.pvp == false) {
+			if (!(info.getState() == ServerState.In_Game) || info.pvp == false) {
 				e.setCancelled(true);
 			}
 		}
@@ -366,6 +364,21 @@ public class LobbyListiners implements Listener {
 		if (!(e.getRegainReason() == RegainReason.CUSTOM
 				|| e.getRegainReason() == RegainReason.MAGIC || e
 					.getRegainReason() == RegainReason.MAGIC_REGEN)) {
+			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onEntitySpawn(CreatureSpawnEvent e) {
+		if (!(info.getState() == ServerState.In_Game)) {
+			if (!(e.getEntity() instanceof Player)) {
+				Location loc = e.getEntity().getLocation();
+				e.getEntity().remove();
+				tt.cats.add(e.getEntity().getWorld()
+						.spawnCreature(loc, EntityType.OCELOT));
+				return;
+			}
+		} else {
 			e.setCancelled(true);
 		}
 	}

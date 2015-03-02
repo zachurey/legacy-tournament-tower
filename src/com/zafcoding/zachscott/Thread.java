@@ -91,7 +91,7 @@ public class Thread implements Runnable {
 			}
 		}
 		if (info.p1 == 1) {
-			if (!(info.p2 == 0)) {
+			if (info.p2 >= 1 && pp1 != null) {
 
 				for (Player pa : info.players) {
 					if (info.getPP(pa).getLevel() == 1) {
@@ -117,7 +117,7 @@ public class Thread implements Runnable {
 			}
 		}
 		if (info.p2 == 1) {
-			if (!(info.p3 == 0)) {
+			if (info.p3 >= 1 && info.p1 == 0 && pp2 != null) {
 
 				for (Player pa : info.players) {
 					if (info.getPP(pa).getLevel() == 2) {
@@ -143,7 +143,7 @@ public class Thread implements Runnable {
 			}
 		}
 		if (info.p3 == 1) {
-			if (!(info.p4 == 0)) {
+			if (info.p4 >= 1 && info.p2 == 0 && pp3 != null) {
 
 				for (Player pa : info.players) {
 					if (info.getPP(pa).getLevel() == 3) {

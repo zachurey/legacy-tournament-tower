@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -63,6 +64,9 @@ public class Game {
 		info.setState(ServerState.In_Game);
 		info.cangg = false;
 		info.cangl = false;
+		for(Entity ent : tt.cats){
+			ent.remove();
+		}
 		for (Player pp : info.getPlayers()) {
 			/*
 			 * try { update.setMatchStart(pp, update.getMatchStart(pp) + 1); }
@@ -106,12 +110,12 @@ public class Game {
 		PlayerProfile mostk = null;
 		PlayerProfile mostd = null;
 		tt.debugMsg("The game is ending!");
-		try {
+		/*try {
 			update.updateStats();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		/*try {
 			int wincount = update.getWin(winner);
 			update.setWin(winner, wincount + 1);

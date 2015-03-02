@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,11 +45,12 @@ public class TT extends JavaPlugin {
 	public static UpdatePlayer updatePlayer;
 	// public static EffectLib lib;
 	// public static EffectManager man;
-	boolean debug = true;
+	boolean debug = false;
 	public boolean mysql = false;
 	public static ArrayList<String> vips = new ArrayList<String>();
 	public static ArrayList<String> bannedplayers = new ArrayList<String>();
 	public static HashMap<String, String> mods = new HashMap<String, String>();
+	public static ArrayList<Entity> cats = new ArrayList<Entity>();
 	int xxx = 1;
 	public MySQL MySQL = new MySQL(this, "23.229.139.232", "3306", "Server",
 			"ttPlugin", "DoubleTT!");
@@ -257,6 +259,11 @@ public class TT extends JavaPlugin {
 			String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
+			if (label.equalsIgnoreCase("ip")) {
+				p.sendMessage("Current server ip is: " + Bukkit.getIp() + ":"
+						+ Bukkit.getPort());
+				return true;
+			}
 			if (label.equalsIgnoreCase("gl")) {
 				if (info.isPronePlayer(p)) {
 					int rand = game.getRandom(1, 6);
@@ -412,7 +419,7 @@ public class TT extends JavaPlugin {
 							+ "Do not make the game end yet! Wait till the end!");
 					return true;
 				}
-				if (info.getPP(p).isGL()) {
+				if (info.getPP(p).isGG()) {
 					p.sendMessage(ChatColor.GREEN
 							+ "We admit you are a good sport, but you do not need to brag!");
 					return true;
@@ -445,30 +452,33 @@ public class TT extends JavaPlugin {
 					}
 				}
 				if (args.length == 1) {
-					if (p.hasPermission("tt.admin")) {
 						if (args[0].equalsIgnoreCase("playercount")) {
+							if(!p.isOp()){
+								p.sendMessage("No perms dude! ):");
+								return true;
+							}
 							p.sendMessage(pre + " There are currently "
 									+ info.getPlayerCount() + " out of "
 									+ getMaxPlayer() + " players online!");
 							p.sendMessage(pre + ChatColor.GRAY + " ("
 									+ info.getPlayers() + ")");
 							return true;
-						}
 					}
 					if (args[0].equalsIgnoreCase("force")) {
-						if(p.isOp() || p.hasPermission("tt.forcestart")){
-						p.sendMessage(ChatColor.GRAY + "Starting the game!");
-						info.setState(ServerState.In_Game);
-						info.setTime(0);
-						game.start();
-						return true;
+						if (p.isOp() || p.hasPermission("tt.forcestart")) {
+							p.sendMessage(ChatColor.GRAY + "Starting the game!");
+							info.setState(ServerState.In_Game);
+							info.setTime(0);
+							game.start();
+							return true;
 						}
-					}if (args[0].equalsIgnoreCase("finish")) {
-						if(p.isOp() || p.hasPermission("tt.forceend")){
-						p.sendMessage(ChatColor.GRAY + "Stopping the game!");
-						debugMsg("End player is " + (p != null));
-						game.endGame(p);
-						return true;
+					}
+					if (args[0].equalsIgnoreCase("finish")) {
+						if (p.isOp() || p.hasPermission("tt.forceend")) {
+							p.sendMessage(ChatColor.GRAY + "Stopping the game!");
+							debugMsg("End player is " + (p != null));
+							game.endGame(p);
+							return true;
 						}
 					}
 					if (args[0].equalsIgnoreCase("prone")) {
@@ -505,6 +515,10 @@ public class TT extends JavaPlugin {
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("resetkit")) {
+						if(!p.isOp()){
+							p.sendMessage("No perms dude! ):");
+							return true;
+						}
 						p.getInventory().clear();
 						int i = game.getRandom(1, 2);
 						if (i == 1) {
@@ -524,6 +538,10 @@ public class TT extends JavaPlugin {
 				}
 				if (args.length == 2) {
 					if (args[0].equalsIgnoreCase("playerprofile")) {
+						if(!p.isOp()){
+							p.sendMessage("No perms dude! ):");
+							return true;
+						}
 						PlayerProfile pp = info
 								.getPP(Bukkit.getPlayer(args[1]));
 						p.sendMessage("======PlayerProfile:"
@@ -541,6 +559,10 @@ public class TT extends JavaPlugin {
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("setcount")) {
+						if(!p.isOp()){
+							p.sendMessage("No perms dude! ):");
+							return true;
+						}
 						info.setCount(Integer.parseInt(args[1]));
 						p.sendMessage(pre + ChatColor.LIGHT_PURPLE
 								+ " The player count has been set to "
@@ -548,6 +570,10 @@ public class TT extends JavaPlugin {
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("setkill")) {
+						if(!p.isOp()){
+							p.sendMessage("No perms dude! ):");
+							return true;
+						}
 						PlayerProfile pp = info.getPP(p);
 						pp.setKills(Integer.parseInt(args[1]));
 						pp.setTotalKill(pp.getTotalKill()
@@ -560,6 +586,10 @@ public class TT extends JavaPlugin {
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("setdeath")) {
+						if(!p.isOp()){
+							p.sendMessage("No perms dude! ):");
+							return true;
+						}
 						PlayerProfile pp = info.getPP(p);
 						pp.setDeath(Integer.parseInt(args[1]));
 						pp.setTotalDeath(pp.getTotalDeaths()
@@ -575,6 +605,10 @@ public class TT extends JavaPlugin {
 			p.sendMessage(pre
 					+ " The command you just did does not exist! Do /tt to see all commands!");
 		} else {
+			if(label.equalsIgnoreCase("ip")){
+				System.out.println("Current server ip is: " + Bukkit.getIp() + ":"
+						+ Bukkit.getPort());
+			}
 			if (args[0].equalsIgnoreCase("setstate")) {
 				if (args.length == 1) {
 					System.out
@@ -745,7 +779,8 @@ public class TT extends JavaPlugin {
 	}
 
 	public int getMinPlayer() {
-		return getConfig().getInt("MinPlayers");
+		//TODO: Might want to fix that
+		return 8;
 	}
 
 	public int getLobbyTime() {
@@ -767,7 +802,8 @@ public class TT extends JavaPlugin {
 	}
 
 	public int getMaxPlayer() {
-		return getConfig().getInt("MaxPlayers");
+		//TODO: Might want to fix that
+		return 30;
 	}
 
 	public int getPotionTime() {

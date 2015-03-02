@@ -98,10 +98,7 @@ public class Info {
 			p.getInventory().clear();
 			PlayerProfile pp = new PlayerProfile(p);
 			addPlayerPro(p);
-			broadCast(ChatColor.GOLD + "" + p.getDisplayName() + ""
-					+ ChatColor.WHITE + " has joined the game!"
-					+ ChatColor.YELLOW + " (" + getPlayerCount() + "/"
-					+ maxplay + ")");
+			p.sendMessage(ChatColor.YELLOW + "You have joined the game!");
 			return;
 		} else {
 			p.kickPlayer(ChatColor.RED
