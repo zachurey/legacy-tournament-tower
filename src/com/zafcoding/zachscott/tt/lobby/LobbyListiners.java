@@ -367,20 +367,4 @@ public class LobbyListiners implements Listener {
 			e.setCancelled(true);
 		}
 	}
-
-	@EventHandler
-	public void onEntitySpawn(CreatureSpawnEvent e) {
-		if (!(info.getState() == ServerState.In_Game)) {
-			if (!(e.getEntity() instanceof Player)) {
-				Location loc = e.getEntity().getLocation();
-				e.getEntity().remove();
-				tt.cats.add(e.getEntity().getWorld()
-						.spawnCreature(loc, EntityType.OCELOT));
-				return;
-			}
-		} else {
-			e.setCancelled(true);
-		}
-	}
-
 }
