@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/zfarley/Desktop/BukkitServer/craftbukkit.jar"/>
 	<classpathentry kind="lib" path="/Users/zfarley/Downloads/bukkit-1.8-R0.1-SNAPSHOT-b5.jar"/>
+	<classpathentry kind="lib" path="/Users/zfarley/Desktop/BukkitServer/plugins/EffectLib-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
