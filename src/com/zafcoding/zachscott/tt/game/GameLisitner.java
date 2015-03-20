@@ -37,6 +37,25 @@ public class GameLisitner implements Listener {
 	public void onPlayerDie(PlayerDeathEvent e) {
 		if (info.getState() == ServerState.In_Game) {
 			if (e.getEntity().getKiller() != null) {
+				if (e.getEntity() == e.getEntity().getKiller()) {
+					PlayerProfile pp = info.getPP(e.getEntity());
+					pp.getPlayer().setExp(0f);
+					pp.getPlayer().getInventory().clear();
+					pp.setDeath(5);
+					pp.setTotalDeath(pp.getTotalDeaths() + 1);
+					e.setDeathMessage(ChatColor.GOLD + ""
+							+ e.getEntity().getDisplayName() + ChatColor.WHITE
+							+ " Was " + ChatColor.RED + "Butchered"
+							+ ChatColor.WHITE + " By " + ChatColor.GOLD
+							+ "Themselves");
+					e.setDroppedExp(0);
+					PlayerProfile tp = info.getPP(e.getEntity().getKiller());
+					tp.setKills(0);
+					tp.setTotalKill(tp.getTotalKill() + 1);
+					tp.setLevel(1);
+					game.killCheck(tp);
+					return;
+				}
 				PlayerProfile pp = info.getPP(e.getEntity());
 				pp.reset();
 				pp.getPlayer().setExp(0f);
@@ -57,16 +76,16 @@ public class GameLisitner implements Listener {
 			} else {
 				tt.debugMsg("The instance of the killer is "
 						+ e.getEntity().getKiller());
-				/*
-				 * PlayerProfile pp = info.getPP(e.getEntity());
-				 * pp.setPower(false); pp.getPlayer().getInventory().clear();
-				 * pp.setDeath(pp.getDeaths() + 1);
-				 * pp.setTotalDeath(pp.getTotalDeaths() + 1);
-				 * e.setDeathMessage(ChatColor.GOLD + "" +
-				 * e.getEntity().getDisplayName() + ChatColor.WHITE + " Was " +
-				 * ChatColor.RED + "Butchered" + ChatColor.WHITE + " By " +
-				 * ChatColor.GOLD + "Nature!"); return;
-				 */
+				PlayerProfile pp = info.getPP(e.getEntity());
+				pp.setPower(false);
+				pp.getPlayer().getInventory().clear();
+				pp.setDeath(pp.getDeaths() + 1);
+				pp.setTotalDeath(pp.getTotalDeaths() + 1);
+				e.setDeathMessage(ChatColor.GOLD + ""
+						+ e.getEntity().getDisplayName() + ChatColor.WHITE
+						+ " Was " + ChatColor.RED + "Butchered"
+						+ ChatColor.WHITE + " By " + ChatColor.GOLD + "Nature!");
+				return;
 			}
 		} else {
 			e.setDeathMessage(e.getEntity().getDisplayName()

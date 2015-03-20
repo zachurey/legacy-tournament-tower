@@ -304,7 +304,7 @@ public class TT extends JavaPlugin {
 				return true;
 			}
 			if (label.equalsIgnoreCase("spawn")) {
-				if (info.getState() == ServerState.Lobby
+				if (info.getState() == ServerState.Pre_Game
 						|| info.getState() == ServerState.Post_Game) {
 					p.teleport(p.getWorld().getSpawnLocation());
 					return true;
@@ -626,9 +626,9 @@ public class TT extends JavaPlugin {
 					int arg = Integer.parseInt(args[1]);
 					if (arg == 0) {
 						System.out.print("The server state has been set to "
-								+ arg + " (" + ServerState.Lobby.toString()
+								+ arg + " (" + ServerState.Pre_Game.toString()
 								+ ")");
-						info.setState(ServerState.Lobby);
+						info.setState(ServerState.Pre_Game);
 						return true;
 					}
 					if (arg == 1) {
