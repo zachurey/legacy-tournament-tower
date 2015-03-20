@@ -30,9 +30,6 @@ import com.zafcoding.zachscott.tt.lobby.LobbyListiners;
 import com.zafcoding.zachscott.tt.mysql.MySQL;
 import com.zafcoding.zachscott.tt.mysql.Update;
 
-import de.slikey.effectlib.EffectLib;
-import de.slikey.effectlib.EffectManager;
-
 public class TT extends JavaPlugin {
 
 	double version = 2.6;
