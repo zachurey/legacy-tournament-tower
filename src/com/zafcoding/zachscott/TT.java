@@ -525,7 +525,7 @@ public class TT extends JavaPlugin {
 					if (args[0].equalsIgnoreCase("skip")) {
 						if (p.hasPermission("tt.forceskip")) {
 							Random rand = new Random();
-							int map = rand.nextInt(2);
+							int map = rand.nextInt(3);
 							System.out.println("Rand is " + map);
 							if (map == 0) {
 								info.world = "IceTemple";
@@ -537,7 +537,7 @@ public class TT extends JavaPlugin {
 								info.worldcreate = "8_BitHer0 & ChopChop237";
 								System.out.println("Set to Splinterz");
 							}
-							if (map == 2) {
+							if (map >= 2) {
 								info.world = "Villiage";
 								info.worldcreate = "ChopChop27";
 								System.out.println("Set to Villiage");
