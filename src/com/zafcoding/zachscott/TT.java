@@ -333,13 +333,23 @@ public class TT extends JavaPlugin {
 					return true;
 				}
 			}
-			/*
-			 * if (label.equalsIgnoreCase("hub") ||
-			 * label.equalsIgnoreCase("lobby")) { redirectRequest(server, p);
-			 * return true; }
-			 */
-			if (label.equalsIgnoreCase("relog")) {
 
+			if (label.equalsIgnoreCase("start")) {
+				if (p.isOp() || p.hasPermission("tt.forcestart")) {
+					p.sendMessage(ChatColor.GRAY + "Starting the game!");
+					info.setState(ServerState.In_Game);
+					info.setTime(0);
+					game.start();
+					return true;
+				}
+			}
+			if (label.equalsIgnoreCase("stop")) {
+				if (p.isOp() || p.hasPermission("tt.forceend")) {
+					p.sendMessage(ChatColor.GRAY + "Stopping the game!");
+					debugMsg("End player is " + (p != null));
+					game.endGame(p);
+					return true;
+				}
 			}
 			if (label.equalsIgnoreCase("stats")) {
 				p.sendMessage(ChatColor.GOLD + "===Tournament Tower:"
@@ -512,6 +522,23 @@ public class TT extends JavaPlugin {
 									+ info.getPlayers() + ")");
 							return true;
 						}
+					}
+					if (args[0].equalsIgnoreCase("help")) {
+						p.sendMessage(pre + " Admin commands:");
+						p.sendMessage(pre
+								+ " /tt setspawn <world> <level> <spawn #>"
+								+ ChatColor.GRAY
+								+ " (0 = Lobby, 1 = Level 1, 2 = Level 2, 3 = Level 3, 4 = Level 4, 5 = Level 5)");
+						p.sendMessage(pre + " /tt prone");
+						p.sendMessage(pre + " /tt playercount");
+						p.sendMessage(pre + " /tt playerprofile <player>");
+						p.sendMessage(pre + " /tt resetkit");
+						p.sendMessage(pre + " /tt setcount <integer>");
+						p.sendMessage(pre + " /tt setkill <integer>");
+						p.sendMessage(pre + " /tt setdeath <integer>");
+						p.sendMessage(pre + " /start");
+						p.sendMessage(pre + " /stop");
+						return true;
 					}
 					if (args[0].equalsIgnoreCase("force")) {
 						if (p.isOp() || p.hasPermission("tt.forcestart")) {
