@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /*import lilypad.client.connect.api.Connect;
-import lilypad.client.connect.api.ConnectSettings;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
-import lilypad.client.connect.api.result.FutureResultListener;
-import lilypad.client.connect.api.result.Result;
-import lilypad.client.connect.api.result.StatusCode;
-import lilypad.client.connect.api.result.impl.RedirectResult;*/
+ import lilypad.client.connect.api.ConnectSettings;
+ import lilypad.client.connect.api.request.impl.RedirectRequest;
+ import lilypad.client.connect.api.result.FutureResultListener;
+ import lilypad.client.connect.api.result.Result;
+ import lilypad.client.connect.api.result.StatusCode;
+ import lilypad.client.connect.api.result.impl.RedirectResult;*/
+
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -54,9 +56,9 @@ public class TT extends JavaPlugin {
 	public static ArrayList<String> vips = new ArrayList<String>();
 	public static ArrayList<String> bannedplayers = new ArrayList<String>();
 	public static HashMap<String, String> mods = new HashMap<String, String>();
-	//public static Connect connect;
-	//public static String server = "hub";
-	//ConnectSettings settings;
+	// public static Connect connect;
+	// public static String server = "hub";
+	// ConnectSettings settings;
 	String username;
 	String password;
 	InetSocketAddress outboundAddress;
@@ -76,8 +78,10 @@ public class TT extends JavaPlugin {
 		updatePlayer = new UpdatePlayer();
 		// lib = EffectLib.instance();
 		// man = new EffectManager(lib);
-		/*this.connect = ((Connect) getServer().getServicesManager()
-				.getRegistration(Connect.class).getProvider());*/
+		/*
+		 * this.connect = ((Connect) getServer().getServicesManager()
+		 * .getRegistration(Connect.class).getProvider());
+		 */
 		// settings = connect.getSettings();
 		// username = settings.getUsername();
 		// password = settings.getPassword();
@@ -95,10 +99,29 @@ public class TT extends JavaPlugin {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Thread(), 20,
 				20);
 		loadConfiguration();
-		info.world = "IceTemple";
-		info.worldcreate = "SpinTown";
-		// info.world = "Villiage";
-		// info.worldcreate = "ChopChop27";
+		Random rand = new Random();
+		int map = rand.nextInt(3);
+		System.out.println("Rand is " + map);
+		if (map == 0) {
+			info.world = "IceTemple";
+			info.worldcreate = "SpinTown";
+			System.out.println("Set to IceTemple");
+		}
+		if (map == 1) {
+			info.world = "Splinterz";
+			info.worldcreate = "8_BitHer0 & ChopChop237";
+			System.out.println("Set to Splinterz");
+		}
+		if (map == 2) {
+			info.world = "Villiage";
+			info.worldcreate = "ChopChop27";
+			System.out.println("Set to Villiage");
+		}
+		if (info.world.equals("") || info.worldcreate.equals("")) {
+			info.world = "IceTemple";
+			info.worldcreate = "SpinTown";
+			System.out.println("Set to IceTemple");
+		}
 		startDebugcheck();
 		System.out.print("[TT] Enabled Tornament Tower v." + version);
 	}
@@ -310,11 +333,11 @@ public class TT extends JavaPlugin {
 					return true;
 				}
 			}
-			/*if (label.equalsIgnoreCase("hub")
-					|| label.equalsIgnoreCase("lobby")) {
-				redirectRequest(server, p);
-				return true;
-			}*/
+			/*
+			 * if (label.equalsIgnoreCase("hub") ||
+			 * label.equalsIgnoreCase("lobby")) { redirectRequest(server, p);
+			 * return true; }
+			 */
 			if (label.equalsIgnoreCase("relog")) {
 
 			}
@@ -499,6 +522,38 @@ public class TT extends JavaPlugin {
 							return true;
 						}
 					}
+					if (args[0].equalsIgnoreCase("skip")) {
+						if (p.hasPermission("tt.forceskip")) {
+							Random rand = new Random();
+							int map = rand.nextInt(2);
+							System.out.println("Rand is " + map);
+							if (map == 0) {
+								info.world = "IceTemple";
+								info.worldcreate = "SpinTown";
+								System.out.println("Set to IceTemple");
+							}
+							if (map == 1) {
+								info.world = "Splinterz";
+								info.worldcreate = "8_BitHer0 & ChopChop237";
+								System.out.println("Set to Splinterz");
+							}
+							if (map == 2) {
+								info.world = "Villiage";
+								info.worldcreate = "ChopChop27";
+								System.out.println("Set to Villiage");
+							}
+							if (info.world.equals("")
+									|| info.worldcreate.equals("")) {
+								info.world = "IceTemple";
+								info.worldcreate = "SpinTown";
+								System.out.println("Set to IceTemple");
+							}
+							p.sendMessage(ChatColor.GRAY
+									+ "Map has been set to " + info.world
+									+ " (Made by " + info.worldcreate + ")");
+							return true;
+						}
+					}
 					if (args[0].equalsIgnoreCase("finish")) {
 						if (p.isOp() || p.hasPermission("tt.forceend")) {
 							p.sendMessage(ChatColor.GRAY + "Stopping the game!");
@@ -611,8 +666,9 @@ public class TT extends JavaPlugin {
 			p.sendMessage(pre
 					+ " The command you just did does not exist! Do /tt to see all commands!");
 		} else {
-			if(args[0].equalsIgnoreCase("ip")){
-				System.out.println("IP: " + Bukkit.getIp() + ":" + Bukkit.getPort());
+			if (args[0].equalsIgnoreCase("ip")) {
+				System.out.println("IP: " + Bukkit.getIp() + ":"
+						+ Bukkit.getPort());
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("setstate")) {
@@ -715,6 +771,7 @@ public class TT extends JavaPlugin {
 			Bukkit.getServer().reload();
 		}
 	}
+
 	public void setLocation(String world, Integer spawn, Integer which,
 			Location loc) {
 		if (spawn == 0) {
@@ -827,30 +884,23 @@ public class TT extends JavaPlugin {
 
 	}
 
-	/*public static void sendPlayerToServer(String server, Player player) {
-		redirectRequest(server, player);
-	}*/
+	/*
+	 * public static void sendPlayerToServer(String server, Player player) {
+	 * redirectRequest(server, player); }
+	 */
 
-	/*@SuppressWarnings("unchecked")
-	public static void redirectRequest(String server, final Player player) {
-		try {
-			connect.request(new RedirectRequest(server, player.getName()))
-					.registerListener(new FutureResultListener() {
-						@Override
-						public void onResult(Result e) {
-							if (e.getStatusCode() == StatusCode.SUCCESS) {
-								player.sendMessage("*woosh*");
-								return;
-							} else {
-								player.kickPlayer(ChatColor.RED
-										+ "The server is restarting... join again in a minute!");
-							}
-						}
-					});
-		} catch (Exception exception) {
-			player.kickPlayer(ChatColor.RED
-					+ "The server is restarting... join again in a minute!");
-		}
-	}*/
+	/*
+	 * @SuppressWarnings("unchecked") public static void redirectRequest(String
+	 * server, final Player player) { try { connect.request(new
+	 * RedirectRequest(server, player.getName())) .registerListener(new
+	 * FutureResultListener() {
+	 * 
+	 * @Override public void onResult(Result e) { if (e.getStatusCode() ==
+	 * StatusCode.SUCCESS) { player.sendMessage("*woosh*"); return; } else {
+	 * player.kickPlayer(ChatColor.RED +
+	 * "The server is restarting... join again in a minute!"); } } }); } catch
+	 * (Exception exception) { player.kickPlayer(ChatColor.RED +
+	 * "The server is restarting... join again in a minute!"); } }
+	 */
 
 }

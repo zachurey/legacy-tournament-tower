@@ -43,7 +43,7 @@ public class Thread implements Runnable {
 		}
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (!info.profiles.contains(info.getPP(player))) {
-				player.kickPlayer(ChatColor.RED + "Please rejoin the game!");
+					player.kickPlayer(ChatColor.RED + "Please rejoin the game!");
 				break;
 			}
 			if (info.getState() == ServerState.Pre_Game) {
