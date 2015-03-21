@@ -345,11 +345,17 @@ public class LobbyListiners implements Listener {
 			e.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler
 	public void onBlockForm(EntityDamageEvent e) {
-		if(!(info.getState() == ServerState.In_Game)){
+		if (!(info.getState() == ServerState.In_Game)) {
 			e.setCancelled(true);
+		}
+		if (e.getEntity() instanceof Player) {
+			Player pl = (Player) e.getEntity();
+			if(info.nopvp.contains(pl)){
+				e.setCancelled(true);
+			}
 		}
 	}
 

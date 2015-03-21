@@ -28,6 +28,7 @@ public class Info {
 	ServerState state = ServerState.Pre_Game;
 	ArrayList<Player> comelist = new ArrayList<Player>();
 	ArrayList<PlayerProfile> profiles = new ArrayList<PlayerProfile>();
+	public static ArrayList<Player> nopvp = new ArrayList<Player>();
 	HashMap<Integer, Integer> num = new HashMap<Integer, Integer>();
 	Player winner = null;
 	public boolean cangg = false;

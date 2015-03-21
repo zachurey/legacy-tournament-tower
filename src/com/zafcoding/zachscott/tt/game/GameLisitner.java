@@ -112,21 +112,7 @@ public class GameLisitner implements Listener {
 		pp.getInventory().addItem(new ItemStack(Material.ARROW, 8));
 		e.setRespawnLocation(tt.getSpawn(info.world, tp.getLevel(),
 				info.getNext(tp.getLevel())));
-		Bukkit.getServer().getScheduler()
-				.scheduleSyncRepeatingTask(tt, new Runnable() {
-
-					@Override
-					public void run() {
-						if (it > 4) {
-							wer = true;
-						}
-						if (!wer) {
-							pp.setHealth(40);
-							pp.setFireTicks(0);
-							it++;
-						}
-					}
-				}, 10, 10);
+		smallPvP(e.getPlayer());
 	}
 
 	@EventHandler
@@ -139,6 +125,18 @@ public class GameLisitner implements Listener {
 		if (info.isPronePlayer(e.getPlayer())) {
 			return;
 		}
+	}
+
+	@SuppressWarnings({ "deprecation", "static-access" })
+	private void smallPvP(final Player pl) {
+		info.nopvp.add(pl);
+		Bukkit.getScheduler().scheduleAsyncRepeatingTask(tt, new Runnable() {
+
+			@Override
+			public void run() {
+				info.nopvp.remove(pl);
+			}
+		}, 40, 40);
 	}
 
 }
