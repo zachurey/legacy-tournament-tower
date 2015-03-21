@@ -1,23 +1,22 @@
 package com.zafcoding.zachscott.tt.game;
 
-import java.sql.SQLException;
 import java.util.Random;
 
-//import lilypad.client.connect.api.request.RequestException;
-//import lilypad.client.connect.api.request.impl.RedirectRequest;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.zafcoding.zachscott.Info;
 import com.zafcoding.zachscott.Info.ServerState;
 import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
 import com.zafcoding.zachscott.tt.mysql.Update;
+//import lilypad.client.connect.api.request.RequestException;
+//import lilypad.client.connect.api.request.impl.RedirectRequest;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 public class Game {
 
@@ -73,7 +72,11 @@ public class Game {
 			 */
 			info.p1++;
 			pp.setFlying(false);
-			pp.teleport(tt.getSpawn(info.world, 1, info.getNext(1)));
+			Location l = tt.getSpawn(info.world, 1, info.getNext(1));
+			if (!l.getChunk().isLoaded()) {
+				l.getChunk().load();
+			}
+			pp.teleport(l);
 			pp.getInventory().setHelmet(new ItemStack(Material.AIR));
 			pp.getInventory().setChestplate(new ItemStack(Material.AIR));
 			pp.getInventory().setLeggings(new ItemStack(Material.AIR));
