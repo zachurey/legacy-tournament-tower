@@ -129,19 +129,19 @@ public class LobbyListiners implements Listener {
 						+ ChatColor.translateAlternateColorCodes('&',
 								e.getMessage()));
 				return;
-			} else {
-				e.setFormat(ChatColor.WHITE
-						+ "["
-						+ ChatColor.DARK_AQUA
-						+ ""
-						+ tt.mods.get(e.getPlayer().getDisplayName())
-						+ ChatColor.WHITE
-						+ "]<"
-						+ e.getPlayer().getDisplayName()
-						+ "> "
-						+ ChatColor.translateAlternateColorCodes('&',
-								e.getMessage()));
 			}
+			e.setFormat(ChatColor.WHITE
+					+ "["
+					+ ChatColor.DARK_AQUA
+					+ ""
+					+ tt.mods.get(e.getPlayer().getDisplayName())
+					+ ChatColor.WHITE
+					+ "]<"
+					+ e.getPlayer().getDisplayName()
+					+ "> "
+					+ ChatColor.translateAlternateColorCodes('&',
+							e.getMessage()));
+			return;
 		}
 		if (tt.vips.contains(e.getPlayer().getDisplayName())) {
 			e.setFormat(ChatColor.WHITE
@@ -353,7 +353,7 @@ public class LobbyListiners implements Listener {
 		}
 		if (e.getEntity() instanceof Player) {
 			Player pl = (Player) e.getEntity();
-			if(info.nopvp.contains(pl)){
+			if (info.nopvp.contains(pl)) {
 				e.setCancelled(true);
 			}
 		}

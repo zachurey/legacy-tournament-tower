@@ -31,6 +31,20 @@ public class Thread implements Runnable {
 	boolean done3 = false;
 	PlayerProfile pp3 = null;
 
+	public void clear() {
+		rel = false;
+		done1 = false;
+		pp1 = null;
+		done2 = false;
+		pp2 = null;
+		done3 = false;
+		pp3 = null;
+	}
+
+	public Thread(){
+		clear();
+	}
+	
 	@Override
 	public void run() {
 		lt.LobbyHeartBeat();
@@ -43,7 +57,7 @@ public class Thread implements Runnable {
 		}
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (!info.profiles.contains(info.getPP(player))) {
-					player.kickPlayer(ChatColor.RED + "Please rejoin the game!");
+				player.kickPlayer(ChatColor.RED + "Please rejoin the game!");
 				break;
 			}
 			if (info.getState() == ServerState.Pre_Game) {

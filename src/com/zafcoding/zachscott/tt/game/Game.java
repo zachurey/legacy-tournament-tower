@@ -30,6 +30,19 @@ public class Game {
 	boolean did2 = false;
 	int smallcount = 15;
 
+	public void clear() {
+		i1 = 0;
+		ii1 = 0;
+		done1 = false;
+		didi = false;
+		did2 = false;
+		smallcount = 15;
+	}
+
+	public Game(){
+		clear();
+	}
+	
 	public void start() {
 		info.cangl = true;
 		info.broadCast(ChatColor.GREEN + "Do /gl to wish everyone good luck!");

@@ -34,6 +34,7 @@ public class Info {
 	public boolean cangg = false;
 
 	public Info() {
+		clear();
 		maxplay = tt.getMaxPlayer();
 		minplay = tt.getMinPlayer();
 		lobbytime = tt.getLobbyTime();
@@ -41,6 +42,29 @@ public class Info {
 		num.put(2, 1);
 		num.put(3, 1);
 		num.put(4, 1);
+	}
+
+	public void clear() {
+		players = new ArrayList<Player>();
+		lobbytime = 0;
+		playerc = 0;
+		maxplay = 0;
+		minplay = 0;
+		int p1 = 0;
+		int p2 = 0;
+		int p3 = 0;
+		int p4 = 0;
+		pvp = false;
+		cangl = false;
+		world = "";
+		worldcreate = "";
+		state = ServerState.Pre_Game;
+		comelist = new ArrayList<Player>();
+		profiles = new ArrayList<PlayerProfile>();
+		nopvp = new ArrayList<Player>();
+		num = new HashMap<Integer, Integer>();
+		winner = null;
+		cangg = false;
 	}
 
 	public boolean isVIP(Player player) {

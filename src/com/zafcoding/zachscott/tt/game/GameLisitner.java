@@ -33,6 +33,15 @@ public class GameLisitner implements Listener {
 	Update update = TT.update;
 	PowerUp pu = TT.power;
 
+	public void clear() {
+		wer = false;
+		it = 0;
+	}
+
+	public GameLisitner() {
+		clear();
+	}
+
 	@EventHandler
 	public void onPlayerDie(PlayerDeathEvent e) {
 		if (info.getState() == ServerState.In_Game) {
@@ -77,7 +86,7 @@ public class GameLisitner implements Listener {
 				tt.debugMsg("The instance of the killer is "
 						+ e.getEntity().getKiller());
 				PlayerProfile pp = info.getPP(e.getEntity());
-				pp.setPower(false);
+				pp.reset();
 				pp.getPlayer().getInventory().clear();
 				pp.setDeath(pp.getDeaths() + 1);
 				pp.setTotalDeath(pp.getTotalDeaths() + 1);

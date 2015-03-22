@@ -10,16 +10,6 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/*import lilypad.client.connect.api.Connect;
- import lilypad.client.connect.api.ConnectSettings;
- import lilypad.client.connect.api.request.impl.RedirectRequest;
- import lilypad.client.connect.api.result.FutureResultListener;
- import lilypad.client.connect.api.result.Result;
- import lilypad.client.connect.api.result.StatusCode;
- import lilypad.client.connect.api.result.impl.RedirectResult;*/
-
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,6 +28,14 @@ import com.zafcoding.zachscott.tt.game.PowerUp;
 import com.zafcoding.zachscott.tt.lobby.LobbyListiners;
 import com.zafcoding.zachscott.tt.mysql.MySQL;
 import com.zafcoding.zachscott.tt.mysql.Update;
+/*import lilypad.client.connect.api.Connect;
+ import lilypad.client.connect.api.ConnectSettings;
+ import lilypad.client.connect.api.request.impl.RedirectRequest;
+ import lilypad.client.connect.api.result.FutureResultListener;
+ import lilypad.client.connect.api.result.Result;
+ import lilypad.client.connect.api.result.StatusCode;
+ import lilypad.client.connect.api.result.impl.RedirectResult;*/
+import java.util.Random;
 
 public class TT extends JavaPlugin {
 
@@ -49,6 +47,8 @@ public class TT extends JavaPlugin {
 	public static PowerUp power;
 	public static Update update;
 	public static UpdatePlayer updatePlayer;
+	public static Thread thread;
+	public static GameLisitner gle;
 	// public static EffectLib lib;
 	// public static EffectManager man;
 	boolean debug = false;
@@ -76,6 +76,8 @@ public class TT extends JavaPlugin {
 		power = new PowerUp();
 		update = new Update();
 		updatePlayer = new UpdatePlayer();
+		thread = new Thread();
+		gle = new GameLisitner();
 		// lib = EffectLib.instance();
 		// man = new EffectManager(lib);
 		/*
@@ -95,12 +97,12 @@ public class TT extends JavaPlugin {
 		}
 		getServer().getPluginManager().registerEvents(new LobbyListiners(),
 				this);
-		getServer().getPluginManager().registerEvents(new GameLisitner(), this);
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Thread(), 20,
-				20);
+		getServer().getPluginManager().registerEvents(gle, this);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, thread, 20, 20);
 		loadConfiguration();
 		Random rand = new Random();
-		int map = rand.nextInt(3);
+		// int map = rand.nextInt(3);
+		int map = 0;
 		System.out.println("Rand is " + map);
 		if (map == 0) {
 			info.world = "IceTemple";
@@ -129,7 +131,16 @@ public class TT extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		System.out.print("[TT] Disabling Tornament Tower v." + version);
+		Bukkit.getScheduler().cancelAllTasks();
 		// man.disposeOnTermination();
+		TT tt = null;
+		Info info = null;
+		Game game = null;
+		PowerUp power = null;
+		Update update = null;
+		UpdatePlayer updatePlayer = null;
+		Thread thread = null;
+		GameLisitner gle = null;
 		System.out.print("[TT] Disabled Tornament Tower v." + version);
 	}
 
@@ -291,6 +302,7 @@ public class TT extends JavaPlugin {
 			this.saveConfig();
 			this.reloadConfig();
 		} else {
+			this.saveConfig();
 			this.reloadConfig();
 		}
 	}
@@ -523,170 +535,190 @@ public class TT extends JavaPlugin {
 							return true;
 						}
 					}
-					if (args[0].equalsIgnoreCase("help")) {
-						p.sendMessage(pre + " Admin commands:");
-						p.sendMessage(pre
-								+ " /tt setspawn <world> <level> <spawn #>"
-								+ ChatColor.GRAY
-								+ " (0 = Lobby, 1 = Level 1, 2 = Level 2, 3 = Level 3, 4 = Level 4, 5 = Level 5)");
-						p.sendMessage(pre + " /tt prone");
-						p.sendMessage(pre + " /tt playercount");
-						p.sendMessage(pre + " /tt playerprofile <player>");
-						p.sendMessage(pre + " /tt resetkit");
-						p.sendMessage(pre + " /tt setcount <integer>");
-						p.sendMessage(pre + " /tt setkill <integer>");
-						p.sendMessage(pre + " /tt setdeath <integer>");
-						p.sendMessage(pre + " /start");
-						p.sendMessage(pre + " /stop");
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("force")) {
-						if (p.isOp() || p.hasPermission("tt.forcestart")) {
-							p.sendMessage(ChatColor.GRAY + "Starting the game!");
-							info.setState(ServerState.In_Game);
-							info.setTime(0);
-							game.start();
+					if (p.hasPermission("tt.admin")) {
+						if (args[0].equalsIgnoreCase("help")) {
+							p.sendMessage(pre + " Admin commands:");
+							p.sendMessage(pre
+									+ " /tt setspawn <world> <level> <spawn #>"
+									+ ChatColor.GRAY
+									+ " (0 = Lobby, 1 = Level 1, 2 = Level 2, 3 = Level 3, 4 = Level 4, 5 = Level 5)");
+							p.sendMessage(pre + " /tt prone");
+							p.sendMessage(pre + " /tt playercount");
+							p.sendMessage(pre + " /tt playerprofile <player>");
+							p.sendMessage(pre + " /tt resetkit");
+							p.sendMessage(pre + " /tt setcount <integer>");
+							p.sendMessage(pre + " /tt setkill <integer>");
+							p.sendMessage(pre + " /tt setdeath <integer>");
+							p.sendMessage(pre + " /start");
+							p.sendMessage(pre + " /stop");
 							return true;
 						}
-					}
-					if (args[0].equalsIgnoreCase("skip")) {
-						if (p.hasPermission("tt.forceskip")) {
-							Random rand = new Random();
-							int map = rand.nextInt(3);
-							System.out.println("Rand is " + map);
-							if (map == 0) {
-								info.world = "IceTemple";
-								info.worldcreate = "SpinTown";
-								System.out.println("Set to IceTemple");
-							}
-							if (map == 1) {
-								info.world = "Splinterz";
-								info.worldcreate = "8_BitHer0 & ChopChop237";
-								System.out.println("Set to Splinterz");
-							}
-							if (map >= 2) {
-								info.world = "Villiage";
-								info.worldcreate = "ChopChop27";
-								System.out.println("Set to Villiage");
-							}
-							if (info.world.equals("")
-									|| info.worldcreate.equals("")) {
-								info.world = "IceTemple";
-								info.worldcreate = "SpinTown";
-								System.out.println("Set to IceTemple");
-							}
-							p.sendMessage(ChatColor.GRAY
-									+ "Map has been set to " + info.world
-									+ " (Made by " + info.worldcreate + ")");
-							return true;
-						}
-					}
-					if (args[0].equalsIgnoreCase("finish")) {
-						if (p.isOp() || p.hasPermission("tt.forceend")) {
-							p.sendMessage(ChatColor.GRAY + "Stopping the game!");
-							debugMsg("End player is " + (p != null));
-							game.endGame(p);
-							return true;
-						}
-					}
-					if (args[0].equalsIgnoreCase("prone")) {
-						if (p.isOp() || p.hasPermission("tt.prone")) {
-							if (info.isPronePlayer(p)) {
-								info.removePronePlayer(p);
-								p.sendMessage(pre + " Prone mode has been "
-										+ ChatColor.RED + "disabled!");
+						if (args[0].equalsIgnoreCase("force")) {
+							if (p.isOp() || p.hasPermission("tt.forcestart")) {
+								p.sendMessage(ChatColor.GRAY
+										+ "Starting the game!");
+								info.setState(ServerState.In_Game);
+								info.setTime(0);
+								game.start();
 								return true;
+							}
+						}
+						if (args[0].equalsIgnoreCase("skip")) {
+							if (p.hasPermission("tt.forceskip")) {
+								Random rand = new Random();
+								int map = rand.nextInt(3);
+								System.out.println("Rand is " + map);
+								if (map == 0) {
+									info.world = "IceTemple";
+									info.worldcreate = "SpinTown";
+									System.out.println("Set to IceTemple");
+								}
+								if (map == 1) {
+									info.world = "Splinterz";
+									info.worldcreate = "8_BitHer0 & ChopChop237";
+									System.out.println("Set to Splinterz");
+								}
+								if (map >= 2) {
+									info.world = "Villiage";
+									info.worldcreate = "ChopChop27";
+									System.out.println("Set to Villiage");
+								}
+								if (info.world.equals("")
+										|| info.worldcreate.equals("")) {
+									info.world = "IceTemple";
+									info.worldcreate = "SpinTown";
+									System.out.println("Set to IceTemple");
+								}
+								p.sendMessage(ChatColor.GRAY
+										+ "Map has been set to " + info.world
+										+ " (Made by " + info.worldcreate + ")");
+								return true;
+							}
+						}
+						if (args[0].equalsIgnoreCase("finish")) {
+							if (p.isOp() || p.hasPermission("tt.forceend")) {
+								p.sendMessage(ChatColor.GRAY
+										+ "Stopping the game!");
+								debugMsg("End player is " + (p != null));
+								game.endGame(p);
+								return true;
+							}
+						}
+						if (args[0].equalsIgnoreCase("prone")) {
+							if (p.isOp() || p.hasPermission("tt.prone")) {
+								if (info.isPronePlayer(p)) {
+									info.removePronePlayer(p);
+									p.sendMessage(pre + " Prone mode has been "
+											+ ChatColor.RED + "disabled!");
+									return true;
+								} else {
+									info.addPronePlayer(p);
+									p.sendMessage(pre + " Prone mode has been "
+											+ ChatColor.GREEN + "enabled!!");
+									return true;
+								}
 							} else {
-								info.addPronePlayer(p);
-								p.sendMessage(pre + " Prone mode has been "
-										+ ChatColor.GREEN + "enabled!!");
+								p.sendMessage("Do not got the perms!");
+							}
+						}
+						if (args[0].equalsIgnoreCase("playerprofile")) {
+							PlayerProfile pp = info.getPP(p);
+							p.sendMessage("======PlayerProfile:"
+									+ p.getDisplayName() + "======");
+							p.sendMessage(pre + " Level: " + ChatColor.GRAY
+									+ pp.getLevel());
+							p.sendMessage(pre + " Kills: " + ChatColor.GRAY
+									+ pp.getKills());
+							p.sendMessage(pre + " Deaths: " + ChatColor.GRAY
+									+ pp.getDeaths());
+							p.sendMessage(pre + " Total Kills: "
+									+ ChatColor.GRAY + pp.getTotalKill());
+							p.sendMessage(pre + " Total Deaths: "
+									+ ChatColor.GRAY + pp.getTotalDeaths());
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("reload")) {
+							if (p.isOp() || p.hasPermission("tt.reload")) {
+								p.sendMessage(ChatColor.GRAY
+										+ "Reloading the game!");
+								safeReload();
 								return true;
 							}
-						} else {
-							p.sendMessage("Do not got the perms!");
 						}
-					}
-					if (args[0].equalsIgnoreCase("playerprofile")) {
-						PlayerProfile pp = info.getPP(p);
-						p.sendMessage("======PlayerProfile:"
-								+ p.getDisplayName() + "======");
-						p.sendMessage(pre + " Level: " + ChatColor.GRAY
-								+ pp.getLevel());
-						p.sendMessage(pre + " Kills: " + ChatColor.GRAY
-								+ pp.getKills());
-						p.sendMessage(pre + " Deaths: " + ChatColor.GRAY
-								+ pp.getDeaths());
-						p.sendMessage(pre + " Total Kills: " + ChatColor.GRAY
-								+ pp.getTotalKill());
-						p.sendMessage(pre + " Total Deaths: " + ChatColor.GRAY
-								+ pp.getTotalDeaths());
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("resetkit")) {
-						p.getInventory().clear();
-						int i = game.getRandom(1, 2);
-						if (i == 1) {
-							p.getInventory().addItem(
-									new ItemStack(Material.WOOD_SWORD));
-						} else {
-							p.getInventory().addItem(
-									new ItemStack(Material.BOW));
-							p.getInventory().addItem(
-									new ItemStack(Material.ARROW, 64));
+						if (args[0].equalsIgnoreCase("resetkit")) {
+							p.getInventory().clear();
+							int i = game.getRandom(1, 2);
+							if (i == 1) {
+								p.getInventory().addItem(
+										new ItemStack(Material.WOOD_SWORD));
+							} else {
+								p.getInventory().addItem(
+										new ItemStack(Material.BOW));
+								p.getInventory().addItem(
+										new ItemStack(Material.ARROW, 64));
+							}
+							p.sendMessage(pre
+									+ " Your kit has been reset! (The int was "
+									+ i + ")");
+							return true;
 						}
-						p.sendMessage(pre
-								+ " Your kit has been reset! (The int was " + i
-								+ ")");
-						return true;
 					}
 				}
 				if (args.length == 2) {
-					if (args[0].equalsIgnoreCase("playerprofile")) {
-						PlayerProfile pp = info
-								.getPP(Bukkit.getPlayer(args[1]));
-						p.sendMessage("======PlayerProfile:"
-								+ p.getDisplayName() + "======");
-						p.sendMessage(pre + " Level: " + ChatColor.GRAY
-								+ pp.getLevel());
-						p.sendMessage(pre + " Kills: " + ChatColor.GRAY
-								+ pp.getKills());
-						p.sendMessage(pre + " Deaths: " + ChatColor.GRAY
-								+ pp.getDeaths());
-						p.sendMessage(pre + " Total Kills: " + ChatColor.GRAY
-								+ pp.getTotalKill());
-						p.sendMessage(pre + " Total Deaths: " + ChatColor.GRAY
-								+ pp.getTotalDeaths());
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("setcount")) {
-						info.setCount(Integer.parseInt(args[1]));
-						p.sendMessage(pre + ChatColor.LIGHT_PURPLE
-								+ " The player count has been set to "
-								+ info.getPlayerCount());
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("setkill")) {
-						PlayerProfile pp = info.getPP(p);
-						pp.setKills(Integer.parseInt(args[1]));
-						pp.setTotalKill(pp.getTotalKill()
-								+ Integer.parseInt(args[1]));
-						p.sendMessage(pre + ChatColor.LIGHT_PURPLE
-								+ " The kills for the player "
-								+ pp.getPlayer().getDisplayName()
-								+ " has been set to " + pp.getKills());
-						game.killCheck(pp);
-						return true;
-					}
-					if (args[0].equalsIgnoreCase("setdeath")) {
-						PlayerProfile pp = info.getPP(p);
-						pp.setDeath(Integer.parseInt(args[1]));
-						pp.setTotalDeath(pp.getTotalDeaths()
-								+ Integer.parseInt(args[1]));
-						p.sendMessage(pre + ChatColor.LIGHT_PURPLE
-								+ " The deaths for the player "
-								+ pp.getPlayer().getDisplayName()
-								+ " has been set to " + pp.getDeaths());
-						return true;
+					if (p.hasPermission("tt.admin")) {
+						if (args[0].equalsIgnoreCase("playerprofile")) {
+							if (Bukkit.getPlayer(args[1]) == null) {
+								p.sendMessage(ChatColor.RED
+										+ "Could not find player '" + args[1]
+										+ "'");
+								return true;
+							}
+							PlayerProfile pp = info.getPP(Bukkit
+									.getPlayer(args[1]));
+							p.sendMessage("======PlayerProfile:"
+									+ p.getDisplayName() + "======");
+							p.sendMessage(pre + " Level: " + ChatColor.GRAY
+									+ pp.getLevel());
+							p.sendMessage(pre + " Kills: " + ChatColor.GRAY
+									+ pp.getKills());
+							p.sendMessage(pre + " Deaths: " + ChatColor.GRAY
+									+ pp.getDeaths());
+							p.sendMessage(pre + " Total Kills: "
+									+ ChatColor.GRAY + pp.getTotalKill());
+							p.sendMessage(pre + " Total Deaths: "
+									+ ChatColor.GRAY + pp.getTotalDeaths());
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("setcount")) {
+							info.setCount(Integer.parseInt(args[1]));
+							p.sendMessage(pre + ChatColor.LIGHT_PURPLE
+									+ " The player count has been set to "
+									+ info.getPlayerCount());
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("setkill")) {
+							PlayerProfile pp = info.getPP(p);
+							pp.setKills(Integer.parseInt(args[1]));
+							pp.setTotalKill(pp.getTotalKill()
+									+ Integer.parseInt(args[1]));
+							p.sendMessage(pre + ChatColor.LIGHT_PURPLE
+									+ " The kills for the player "
+									+ pp.getPlayer().getDisplayName()
+									+ " has been set to " + pp.getKills());
+							game.killCheck(pp);
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("setdeath")) {
+							PlayerProfile pp = info.getPP(p);
+							pp.setDeath(Integer.parseInt(args[1]));
+							pp.setTotalDeath(pp.getTotalDeaths()
+									+ Integer.parseInt(args[1]));
+							p.sendMessage(pre + ChatColor.LIGHT_PURPLE
+									+ " The deaths for the player "
+									+ pp.getPlayer().getDisplayName()
+									+ " has been set to " + pp.getDeaths());
+							return true;
+						}
 					}
 				}
 			}
@@ -929,5 +961,49 @@ public class TT extends JavaPlugin {
 	 * (Exception exception) { player.kickPlayer(ChatColor.RED +
 	 * "The server is restarting... join again in a minute!"); } }
 	 */
+
+	public void safeReload() {
+		onDisable();
+		onEnable();
+		return;
+		/*info.clear();
+		thread.clear();
+		game.clear();
+		gle.clear();
+		try {
+			updatePlayer.updateMods();
+			// updatePlayer.updateVIPs();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		loadConfiguration();
+		Random rand = new Random();
+		// int map = rand.nextInt(3);
+		int map = 0;
+		System.out.println("Rand is " + map);
+		if (map == 0) {
+			info.world = "IceTemple";
+			info.worldcreate = "SpinTown";
+			System.out.println("Set to IceTemple");
+		}
+		if (map == 1) {
+			info.world = "Splinterz";
+			info.worldcreate = "8_BitHer0 & ChopChop237";
+			System.out.println("Set to Splinterz");
+		}
+		if (map == 2) {
+			info.world = "Villiage";
+			info.worldcreate = "ChopChop27";
+			System.out.println("Set to Villiage");
+		}
+		if (info.world.equals("") || info.worldcreate.equals("")) {
+			info.world = "IceTemple";
+			info.worldcreate = "SpinTown";
+			System.out.println("Set to IceTemple");
+		}
+		startDebugcheck();
+		reloadConfig();*/
+	}
 
 }
