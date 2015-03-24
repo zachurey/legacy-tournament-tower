@@ -187,7 +187,8 @@ public class Game {
 							}
 							info.setState(ServerState.Resetting);
 							Bukkit.getScheduler().cancelTask(ii1);
-							Bukkit.getServer().reload();
+							tt.safeReload();
+							info.setState(ServerState.Pre_Game);
 						} else {
 							info.broadCast(tt.pre
 									+ ChatColor.GREEN

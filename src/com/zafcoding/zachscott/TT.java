@@ -49,6 +49,7 @@ public class TT extends JavaPlugin {
 	public static UpdatePlayer updatePlayer;
 	public static Thread thread;
 	public static GameLisitner gle;
+	public static ParticleEffect pe;
 	// public static EffectLib lib;
 	// public static EffectManager man;
 	boolean debug = false;
@@ -563,6 +564,13 @@ public class TT extends JavaPlugin {
 								return true;
 							}
 						}
+						if (args[0].equalsIgnoreCase("bubble")) {
+							if (p.isOp() || p.hasPermission("tt.bubble")) {
+								gle.displayPart(p);
+								p.sendMessage(ChatColor.DARK_AQUA + "Bubbles!");
+								return true;
+							}
+						}
 						if (args[0].equalsIgnoreCase("skip")) {
 							if (p.hasPermission("tt.forceskip")) {
 								Random rand = new Random();
@@ -963,47 +971,27 @@ public class TT extends JavaPlugin {
 	 */
 
 	public void safeReload() {
-		onDisable();
-		onEnable();
+		Bukkit.getPluginManager().disablePlugin(this);
+		Bukkit.getPluginManager().enablePlugin(this);
 		return;
-		/*info.clear();
-		thread.clear();
-		game.clear();
-		gle.clear();
-		try {
-			updatePlayer.updateMods();
-			// updatePlayer.updateVIPs();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		loadConfiguration();
-		Random rand = new Random();
-		// int map = rand.nextInt(3);
-		int map = 0;
-		System.out.println("Rand is " + map);
-		if (map == 0) {
-			info.world = "IceTemple";
-			info.worldcreate = "SpinTown";
-			System.out.println("Set to IceTemple");
-		}
-		if (map == 1) {
-			info.world = "Splinterz";
-			info.worldcreate = "8_BitHer0 & ChopChop237";
-			System.out.println("Set to Splinterz");
-		}
-		if (map == 2) {
-			info.world = "Villiage";
-			info.worldcreate = "ChopChop27";
-			System.out.println("Set to Villiage");
-		}
-		if (info.world.equals("") || info.worldcreate.equals("")) {
-			info.world = "IceTemple";
-			info.worldcreate = "SpinTown";
-			System.out.println("Set to IceTemple");
-		}
-		startDebugcheck();
-		reloadConfig();*/
+		/*
+		 * info.clear(); thread.clear(); game.clear(); gle.clear(); try {
+		 * updatePlayer.updateMods(); // updatePlayer.updateVIPs(); } catch
+		 * (IOException e1) { // TODO Auto-generated catch block
+		 * e1.printStackTrace(); } loadConfiguration(); Random rand = new
+		 * Random(); // int map = rand.nextInt(3); int map = 0;
+		 * System.out.println("Rand is " + map); if (map == 0) { info.world =
+		 * "IceTemple"; info.worldcreate = "SpinTown";
+		 * System.out.println("Set to IceTemple"); } if (map == 1) { info.world
+		 * = "Splinterz"; info.worldcreate = "8_BitHer0 & ChopChop237";
+		 * System.out.println("Set to Splinterz"); } if (map == 2) { info.world
+		 * = "Villiage"; info.worldcreate = "ChopChop27";
+		 * System.out.println("Set to Villiage"); } if (info.world.equals("") ||
+		 * info.worldcreate.equals("")) { info.world = "IceTemple";
+		 * info.worldcreate = "SpinTown";
+		 * System.out.println("Set to IceTemple"); } startDebugcheck();
+		 * reloadConfig();
+		 */
 	}
 
 }

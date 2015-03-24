@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.zafcoding.zachscott.Info;
 import com.zafcoding.zachscott.Info.ServerState;
+import com.zafcoding.zachscott.ParticleEffect;
 import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
 import com.zafcoding.zachscott.tt.mysql.Update;
@@ -32,6 +33,7 @@ public class GameLisitner implements Listener {
 	Game game = TT.game;
 	Update update = TT.update;
 	PowerUp pu = TT.power;
+	ParticleEffect ef;
 
 	public void clear() {
 		wer = false;
@@ -63,6 +65,7 @@ public class GameLisitner implements Listener {
 					tp.setTotalKill(tp.getTotalKill() + 1);
 					tp.setLevel(1);
 					game.killCheck(tp);
+					displayPart(pp.getPlayer());
 					return;
 				}
 				PlayerProfile pp = info.getPP(e.getEntity());
@@ -81,6 +84,7 @@ public class GameLisitner implements Listener {
 				tp.setKills(tp.getKills() + 1);
 				tp.setTotalKill(tp.getTotalKill() + 1);
 				game.killCheck(tp);
+				displayPart(pp.getPlayer());
 				return;
 			} else {
 				tt.debugMsg("The instance of the killer is "
@@ -94,6 +98,7 @@ public class GameLisitner implements Listener {
 						+ e.getEntity().getDisplayName() + ChatColor.WHITE
 						+ " Was " + ChatColor.RED + "Butchered"
 						+ ChatColor.WHITE + " By " + ChatColor.GOLD + "Nature!");
+				displayPart(pp.getPlayer());
 				return;
 			}
 		} else {
@@ -146,6 +151,13 @@ public class GameLisitner implements Listener {
 				info.nopvp.remove(pl);
 			}
 		}, 40, 40);
+	}
+
+	public void displayPart(Player p) {
+		if (p.hasPermission("tt.pro")) {
+			ef.SPELL_WITCH.displayz(.5f, 1f, .5f, 1f, 150, p.getLocation(),
+					Bukkit.getOnlinePlayers());
+		}
 	}
 
 }

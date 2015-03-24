@@ -41,10 +41,10 @@ public class Thread implements Runnable {
 		pp3 = null;
 	}
 
-	public Thread(){
+	public Thread() {
 		clear();
 	}
-	
+
 	@Override
 	public void run() {
 		lt.LobbyHeartBeat();
@@ -79,6 +79,26 @@ public class Thread implements Runnable {
 				PlayerProfile pp = info.getPP(player);
 				pp.getPlayer().setExp(0.0f);
 				pp.getPlayer().setFoodLevel(20);
+				if (tt.mods.containsKey(""
+						+ ChatColor.stripColor(pp.getPlayer().getName()))) {
+					pp.getPlayer().setPlayerListName(
+							ChatColor.DARK_AQUA + "" + pp.getPlayer().getName()
+									+ " " + ChatColor.WHITE + "("
+									+ ChatColor.GOLD + "" + pp.getLevel()
+									+ ChatColor.WHITE + ")");
+				} else if (pp.getPlayer().hasPermission("tt.pro")) {
+					pp.getPlayer().setPlayerListName(
+							ChatColor.RED + "" + pp.getPlayer().getName() + " "
+									+ ChatColor.WHITE + "(" + ChatColor.GOLD
+									+ "" + pp.getLevel() + ChatColor.WHITE
+									+ ")");
+				} else {
+					pp.getPlayer().setPlayerListName(
+							ChatColor.WHITE + "" + pp.getPlayer().getName()
+									+ " " + ChatColor.WHITE + "("
+									+ ChatColor.GOLD + "" + pp.getLevel()
+									+ ChatColor.WHITE + ")");
+				}
 				if (pp.isPower()) {
 					player.setLevel(60 - pp.getPowerTime());
 				} else {
@@ -111,7 +131,7 @@ public class Thread implements Runnable {
 			}
 		}
 		if (info.p1 == 1) {
-			if ((info.p2 > 0) && pp1 == null) {
+			if (info.p2 > 0 && pp1 == null) {
 
 				for (Player pa : info.players) {
 					if (info.getPP(pa).getLevel() == 1) {
@@ -137,7 +157,7 @@ public class Thread implements Runnable {
 			}
 		}
 		if (info.p2 == 1) {
-			if (!(info.p3 == 0) && info.p1 == 0 && pp2 == null) {
+			if ((info.p3 > 0) && info.p1 == 0 && pp2 == null) {
 
 				for (Player pa : info.players) {
 					if (info.getPP(pa).getLevel() == 2) {
@@ -163,7 +183,7 @@ public class Thread implements Runnable {
 			}
 		}
 		if (info.p3 == 1) {
-			if (!(info.p4 == 0) && info.p2 == 0 && pp3 == null) {
+			if (info.p4 > 0 && info.p2 == 0 && pp3 == null) {
 
 				for (Player pa : info.players) {
 					if (info.getPP(pa).getLevel() == 3) {

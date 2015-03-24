@@ -61,13 +61,14 @@ public class LobbyListiners implements Listener {
 				|| info.getState() == ServerState.Post_Game
 				|| info.getState() == ServerState.Resetting) {
 			tt.debugMsg("The PreLoginEvent has been called!");
-			e.disallow(
-					AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
-					ChatColor.RED
-							+ "You can not join the game while the game state is: "
-							+ info.getState());
-			tt.debugMsg("The player " + e.getName()
-					+ " has been kicked due to the wrong state!");
+			e.allow();
+			/*
+			 * e.disallow( AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
+			 * ChatColor.RED +
+			 * "You can not join the game while the game state is: " +
+			 * info.getState()); tt.debugMsg("The player " + e.getName() +
+			 * " has been kicked due to the wrong state!");
+			 */
 			// pp.kickPlayer(ChatColor.RED +
 			// "You can not join the game while the game state is: " +
 			// info.getState());
@@ -143,14 +144,30 @@ public class LobbyListiners implements Listener {
 							e.getMessage()));
 			return;
 		}
-		if (tt.vips.contains(e.getPlayer().getDisplayName())) {
+		if (info.getPP(e.getPlayer()).isSpect()) {
 			e.setFormat(ChatColor.WHITE
 					+ "["
-					+ ChatColor.GREEN
-					+ "VIP"
+					+ ChatColor.RED
+					+ "Spectator"
 					+ ChatColor.WHITE
 					+ "]<"
 					+ e.getPlayer().getDisplayName()
+					+ "> "
+					+ ChatColor.translateAlternateColorCodes('&',
+							e.getMessage()));
+			return;
+		}
+		if (tt.vips.contains(e.getPlayer().getDisplayName())
+				|| e.getPlayer().hasPermission("tt.pro")) {
+			e.setFormat(ChatColor.WHITE
+					+ "["
+					+ ChatColor.WHITE
+					+ "PRO"
+					+ ChatColor.WHITE
+					+ "]<"
+					+ ChatColor.LIGHT_PURPLE
+					+ e.getPlayer().getDisplayName()
+					+ ChatColor.WHITE
 					+ "> "
 					+ ChatColor.translateAlternateColorCodes('&',
 							e.getMessage()));
@@ -162,6 +179,19 @@ public class LobbyListiners implements Listener {
 
 	@EventHandler
 	public void PlayerJoin(PlayerJoinEvent e) {
+		if (info.getState() == ServerState.In_Game) {
+			e.setJoinMessage(ChatColor.GRAY + "Spectator "
+					+ e.getPlayer().getDisplayName() + " is now spectating!");
+			info.addPlayerPro(e.getPlayer());
+			info.addPlayer(e.getPlayer());
+			info.getPP(e.getPlayer()).spectMode();
+			return;
+		}
+		if (tt.mods.containsKey(""
+				+ ChatColor.stripColor(e.getPlayer().getName()))) {
+			e.getPlayer().setPlayerListName(
+					ChatColor.DARK_AQUA + "" + e.getPlayer().getName() + " ");
+		}
 		e.getPlayer().setMaxHealth(40);
 		e.getPlayer().setLevel(0);
 		info.addPlayer(e.getPlayer());

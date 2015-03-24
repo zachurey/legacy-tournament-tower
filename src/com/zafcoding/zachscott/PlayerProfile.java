@@ -2,6 +2,7 @@ package com.zafcoding.zachscott;
 
 import java.util.ArrayList;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import de.slikey.effectlib.Effect;
@@ -9,6 +10,7 @@ import de.slikey.effectlib.Effect;
 public class PlayerProfile {
 
 	TT tt = TT.tt;
+	Info info = TT.info;
 	Player p;
 	int deaths = 0;
 	int kills = 0;
@@ -21,19 +23,20 @@ public class PlayerProfile {
 	boolean powerdid = false;
 	ArrayList<DebugTag> debuger = new ArrayList<DebugTag>();
 	int powertime = 0;
+	boolean spec = false;
 
 	public PlayerProfile(Player player) {
 		p = player;
 	}
 
-	public void setEffect(Effect eff){
+	public void setEffect(Effect eff) {
 		ef = eff;
 	}
-	
-	public Effect getEffect(){
+
+	public Effect getEffect() {
 		return ef;
 	}
-	
+
 	public void setLevel(int num) {
 		tt.debugMsg("setLevel() has been rung! (" + num + ")");
 		level = num;
@@ -137,6 +140,16 @@ public class PlayerProfile {
 
 	public boolean isGL() {
 		return gll;
+	}
+
+	public void spectMode() {
+		spec = true;
+		p.teleport(tt.getSpawn(info.world, 1, 1));
+		p.setGameMode(GameMode.SPECTATOR);
+	}
+
+	public boolean isSpect() {
+		return spec;
 	}
 
 }
