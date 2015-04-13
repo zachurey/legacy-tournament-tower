@@ -3,7 +3,10 @@ package com.zafcoding.zachscott;
 import java.util.ArrayList;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import de.slikey.effectlib.Effect;
 
@@ -24,6 +27,8 @@ public class PlayerProfile {
 	ArrayList<DebugTag> debuger = new ArrayList<DebugTag>();
 	int powertime = 0;
 	boolean spec = false;
+	boolean winner = false;
+	int coins = 0;
 
 	public PlayerProfile(Player player) {
 		p = player;
@@ -150,6 +155,27 @@ public class PlayerProfile {
 
 	public boolean isSpect() {
 		return spec;
+	}
+
+	public void setWinner(boolean b) {
+		winner = b;
+	}
+
+	public boolean isWinner() {
+		return winner;
+	}
+
+	public int getCoins() {
+		return coins;
+	}
+
+	public void setCoins(int i) {
+		coins = i;
+	}
+
+	public void updateCoin() {
+		p.getInventory()
+				.addItem(new ItemStack(Material.GOLD_INGOT, getCoins()));
 	}
 
 }

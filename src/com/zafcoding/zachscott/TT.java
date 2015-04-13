@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,7 +36,6 @@ import com.zafcoding.zachscott.tt.mysql.Update;
  import lilypad.client.connect.api.result.Result;
  import lilypad.client.connect.api.result.StatusCode;
  import lilypad.client.connect.api.result.impl.RedirectResult;*/
-import java.util.Random;
 
 public class TT extends JavaPlugin {
 
@@ -53,10 +53,11 @@ public class TT extends JavaPlugin {
 	// public static EffectLib lib;
 	// public static EffectManager man;
 	boolean debug = false;
-	public boolean mysql = false;
+	public boolean mysql = true;
 	public static ArrayList<String> vips = new ArrayList<String>();
 	public static ArrayList<String> bannedplayers = new ArrayList<String>();
 	public static HashMap<String, String> mods = new HashMap<String, String>();
+	public static boolean gunmode = false;
 	// public static Connect connect;
 	// public static String server = "hub";
 	// ConnectSettings settings;
@@ -67,6 +68,8 @@ public class TT extends JavaPlugin {
 	public MySQL MySQL = new MySQL(this, "23.229.139.232", "3306", "Server",
 			"ttPlugin", "DoubleTT!");
 	public java.sql.Connection c = null;
+	public static HashMap<String, Integer> playerScores = new HashMap();
+	public static String alert = null;
 
 	@Override
 	public void onEnable() {
@@ -92,6 +95,7 @@ public class TT extends JavaPlugin {
 		try {
 			updatePlayer.updateMods();
 			// updatePlayer.updateVIPs();
+			updatePlayer.updateScores(true);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -629,6 +633,24 @@ public class TT extends JavaPlugin {
 								p.sendMessage("Do not got the perms!");
 							}
 						}
+						if (args[0].equalsIgnoreCase("gun")) {
+							if (p.isOp() || p.hasPermission("tt.gun")) {
+								if (gunmode) {
+									gunmode = false;
+									p.sendMessage(ChatColor.RED
+											+ "Gun mode has been disabled!");
+									return true;
+								}
+								if (!gunmode) {
+									gunmode = true;
+									p.sendMessage(ChatColor.RED
+											+ "Gun mode has been enabled!");
+									return true;
+								}
+							} else {
+								p.sendMessage("Do not got the perms!");
+							}
+						}
 						if (args[0].equalsIgnoreCase("playerprofile")) {
 							PlayerProfile pp = info.getPP(p);
 							p.sendMessage("======PlayerProfile:"
@@ -650,6 +672,38 @@ public class TT extends JavaPlugin {
 								p.sendMessage(ChatColor.GRAY
 										+ "Reloading the game!");
 								safeReload();
+								return true;
+							}
+						}
+						if (args[0].equalsIgnoreCase("upit")) {
+							if (p.isOp() || p.hasPermission("tt.up")) {
+								updatePlayer.add(p);
+								p.sendMessage(ChatColor.GRAY
+										+ "Added coin! Score is now: "
+										+ playerScores.get(p.getName()));
+								return true;
+							}
+						}
+						if (args[0].equalsIgnoreCase("lower")) {
+							if (p.isOp() || p.hasPermission("tt.down")) {
+								updatePlayer.subtract(p);
+								p.sendMessage(ChatColor.GRAY
+										+ "Subtracted coin! Score is now: "
+										+ playerScores.get(p.getName()));
+								return true;
+							}
+						}
+						if (args[0].equalsIgnoreCase("saveit")) {
+							if (p.isOp() || p.hasPermission("tt.save")) {
+								try {
+									updatePlayer.saveScores();
+									p.sendMessage(ChatColor.GRAY
+											+ "Saved the scores!");
+								} catch (IOException e) {
+									p.sendMessage(ChatColor.RED
+											+ "Error! Check the log!");
+									e.printStackTrace();
+								}
 								return true;
 							}
 						}

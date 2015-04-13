@@ -1,5 +1,8 @@
 package com.zafcoding.zachscott.tt.game;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
@@ -8,6 +11,7 @@ import com.zafcoding.zachscott.Info;
 import com.zafcoding.zachscott.Info.ServerState;
 import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
+import com.zafcoding.zachscott.UpdatePlayer;
 import com.zafcoding.zachscott.tt.mysql.Update;
 //import lilypad.client.connect.api.request.RequestException;
 //import lilypad.client.connect.api.request.impl.RedirectRequest;
@@ -23,6 +27,7 @@ public class Game {
 	TT tt = TT.tt;
 	Info info = TT.info;
 	Update update = TT.update;
+	UpdatePlayer up = TT.updatePlayer;
 	int i1 = 0;
 	int ii1 = 0;
 	boolean done1 = false;
@@ -39,10 +44,10 @@ public class Game {
 		smallcount = 15;
 	}
 
-	public Game(){
+	public Game() {
 		clear();
 	}
-	
+
 	public void start() {
 		info.cangl = true;
 		info.broadCast(ChatColor.GREEN + "Do /gl to wish everyone good luck!");
@@ -90,13 +95,18 @@ public class Game {
 				l.getChunk().load();
 			}
 			pp.teleport(l);
-			pp.getInventory().setHelmet(new ItemStack(Material.AIR));
-			pp.getInventory().setChestplate(new ItemStack(Material.AIR));
-			pp.getInventory().setLeggings(new ItemStack(Material.AIR));
-			pp.getInventory().setBoots(new ItemStack(Material.AIR));
-			pp.getInventory().addItem(new ItemStack(Material.WOOD_SWORD));
-			pp.getInventory().addItem(new ItemStack(Material.BOW));
-			pp.getInventory().addItem(new ItemStack(Material.ARROW, 8));
+			if (tt.gunmode) {
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+						"crackshot give " + pp.getDisplayName() + " Ak-47");
+			} else {
+				pp.getInventory().setHelmet(new ItemStack(Material.AIR));
+				pp.getInventory().setChestplate(new ItemStack(Material.AIR));
+				pp.getInventory().setLeggings(new ItemStack(Material.AIR));
+				pp.getInventory().setBoots(new ItemStack(Material.AIR));
+				pp.getInventory().addItem(new ItemStack(Material.WOOD_SWORD));
+				pp.getInventory().addItem(new ItemStack(Material.BOW));
+				pp.getInventory().addItem(new ItemStack(Material.ARROW, 8));
+			}
 		}
 		info.broadCast(ChatColor.LIGHT_PURPLE
 				+ "Tournament Tower has begun! Good luck!");
@@ -138,8 +148,6 @@ public class Game {
 		info.setState(ServerState.Post_Game);
 		info.broadCast(tt.pre + " Tournament Tower is over!");
 		info.broadCast(ChatColor.YELLOW + "============");
-		info.broadCast(ChatColor.GRAY
-				+ "Updating player stats so expect lag...");
 		info.broadCast(tt.pre + ChatColor.YELLOW + " Congrats to the winner "
 				+ ChatColor.GREEN + winner.getDisplayName() + ChatColor.GOLD
 				+ "!");
@@ -151,6 +159,8 @@ public class Game {
 			 * e.printStackTrace(); }
 			 */
 			if (ppp == winner) {
+				PlayerProfile pq = info.getPP(ppp);
+				pq.setWinner(true);
 				ppp.teleport(tt.getSpawn(info.world, 5, 1));
 			} else {
 				ppp.teleport(ppp.getWorld().getSpawnLocation());
@@ -177,6 +187,11 @@ public class Game {
 				+ ChatColor.AQUA + mostd.getPlayer().getDisplayName() + " ("
 				+ mostd.getTotalDeaths() + ")");
 		info.broadCast(ChatColor.YELLOW + "============");
+		try {
+			up.saveScores();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		ii1 = Bukkit.getServer().getScheduler()
 				.scheduleSyncRepeatingTask(tt, new Runnable() {
 					@Override
@@ -186,9 +201,19 @@ public class Game {
 								p1.chat("/hub");
 							}
 							info.setState(ServerState.Resetting);
+							for (Player ooo : Bukkit.getOnlinePlayers()) {
+								ooo.kickPlayer(ChatColor.RED
+										+ "The Game is over! Rejoin in a moment to play again!");
+							}
+							try {
+								update.updateStats();
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							Bukkit.getScheduler().cancelTask(ii1);
-							tt.safeReload();
-							info.setState(ServerState.Pre_Game);
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+									"restart");
 						} else {
 							info.broadCast(tt.pre
 									+ ChatColor.GREEN
@@ -201,7 +226,6 @@ public class Game {
 
 	// Took me 42 minutes to remember to put the return in there
 	public void killCheck(PlayerProfile tp) {
-		Player[] aa = Bukkit.getOnlinePlayers();
 		tt.debugMsg("killCheck called!");
 		if (tp.getKills() >= 5) {
 			tt.debugMsg("The player has " + tp.getKills());
@@ -287,7 +311,6 @@ public class Game {
 				tt.debugMsg("The player be level 5!");
 				tp.getPlayer().playSound(tp.getPlayer().getLocation(),
 						Sound.LEVEL_UP, 1, 1);
-				tt.debugMsg("Let's end this!");
 				endGame(tp.getPlayer());
 				// pe.HAPPY_VILLAGER.display(tp.getPlayer().getLocation(), 0f,
 				// 1f,

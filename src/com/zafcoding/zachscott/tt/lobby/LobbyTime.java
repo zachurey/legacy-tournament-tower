@@ -1,7 +1,6 @@
 package com.zafcoding.zachscott.tt.lobby;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.zafcoding.zachscott.Info;
@@ -41,7 +40,7 @@ public class LobbyTime {
 			info.setTime(60);
 			info.broadCast(ChatColor.BLUE + "Time skipping to 60 seconds!");
 		}
-		if (tt.isBroadCastTime(info.getTime())) {
+		if (tt.isBroadCastTime(info.getTime()) && !(info.getTime() <= 10)) {
 			info.broadCast(ChatColor.AQUA + "" + info.getTime()
 					+ " seconds till the game starts!");
 			info.broadCast(ChatColor.AQUA + "Map: " + info.world);
@@ -52,6 +51,9 @@ public class LobbyTime {
 			info.broadCast(ChatColor.AQUA + "(At least " + tt.getMinPlayer()
 					+ " players are needed to start the game)");
 			info.broadCast("");
+		}if(info.getTime()<=10){
+			info.broadCast(ChatColor.AQUA + "" + info.getTime()
+					+ " seconds till the game starts!");
 		}
 		if (info.getTime() == 0) {
 			if (info.getPlayerCount() >= tt.getMinPlayer()) {
@@ -60,21 +62,17 @@ public class LobbyTime {
 			} else {
 				info.broadCast("");
 				info.broadCast("");
-				info.broadCast("");
 				info.broadCast(ChatColor.BLUE
-						+ "No enough players! That game needs at least "
+						+ "Not enough players! The game needs at least "
 						+ tt.getMinPlayer() + " players to start!");
 				info.broadCast(ChatColor.BLUE + "Restarting da clock!");
+				info.broadCast("");
 				info.broadCast("");
 				info.setTime(tt.getLobbyTime());
 				return;
 			}
 		}
 		info.setTime(info.getTime() - 1);
-		for (Player pl : info.getPlayers()) {
-			pl.playSound(pl.getLocation(), Sound.NOTE_PIANO, 1, 1);
-			pl.setLevel(info.getTime());
-		}
 	}
 
 }

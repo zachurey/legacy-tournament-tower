@@ -1,12 +1,9 @@
 package com.zafcoding.zachscott.tt.game;
 
-import java.sql.SQLException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +19,7 @@ import com.zafcoding.zachscott.Info.ServerState;
 import com.zafcoding.zachscott.ParticleEffect;
 import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
+import com.zafcoding.zachscott.UpdatePlayer;
 import com.zafcoding.zachscott.tt.mysql.Update;
 
 public class GameLisitner implements Listener {
@@ -32,6 +30,7 @@ public class GameLisitner implements Listener {
 	Info info = TT.info;
 	Game game = TT.game;
 	Update update = TT.update;
+	UpdatePlayer up = TT.updatePlayer;
 	PowerUp pu = TT.power;
 	ParticleEffect ef;
 
@@ -85,6 +84,10 @@ public class GameLisitner implements Listener {
 				tp.setTotalKill(tp.getTotalKill() + 1);
 				game.killCheck(tp);
 				displayPart(pp.getPlayer());
+				up.add(e.getEntity().getKiller());
+				pp.setCoins(pp.getCoins() + 1);
+				e.getEntity().getKiller()
+						.sendMessage(ChatColor.AQUA + "+1 Token");
 				return;
 			} else {
 				tt.debugMsg("The instance of the killer is "
@@ -117,13 +120,20 @@ public class GameLisitner implements Listener {
 		// pp.getInventory().getChestplate().setType(Material.LEATHER_CHESTPLATE);
 		// pp.getInventory().getLeggings().setType(Material.LEATHER_LEGGINGS);
 		// pp.getInventory().getBoots().setType(Material.LEATHER_BOOTS);
-		pp.getInventory().setHelmet(new ItemStack(Material.AIR));
-		pp.getInventory().setChestplate(new ItemStack(Material.AIR));
-		pp.getInventory().setLeggings(new ItemStack(Material.AIR));
-		pp.getInventory().setBoots(new ItemStack(Material.AIR));
-		pp.getInventory().addItem(new ItemStack(Material.WOOD_SWORD));
-		pp.getInventory().addItem(new ItemStack(Material.BOW));
-		pp.getInventory().addItem(new ItemStack(Material.ARROW, 8));
+		if (tt.gunmode) {
+			Bukkit.getServer().dispatchCommand(
+					Bukkit.getConsoleSender(),
+					"crackshot give " + e.getPlayer().getDisplayName()
+							+ " Ak-47");
+		} else {
+			pp.getInventory().setHelmet(new ItemStack(Material.AIR));
+			pp.getInventory().setChestplate(new ItemStack(Material.AIR));
+			pp.getInventory().setLeggings(new ItemStack(Material.AIR));
+			pp.getInventory().setBoots(new ItemStack(Material.AIR));
+			pp.getInventory().addItem(new ItemStack(Material.WOOD_SWORD));
+			pp.getInventory().addItem(new ItemStack(Material.BOW));
+			pp.getInventory().addItem(new ItemStack(Material.ARROW, 8));
+		}
 		e.setRespawnLocation(tt.getSpawn(info.world, tp.getLevel(),
 				info.getNext(tp.getLevel())));
 		smallPvP(e.getPlayer());
@@ -156,7 +166,7 @@ public class GameLisitner implements Listener {
 	public void displayPart(Player p) {
 		if (p.hasPermission("tt.pro")) {
 			ef.SPELL_WITCH.displayz(.5f, 1f, .5f, 1f, 150, p.getLocation(),
-					Bukkit.getOnlinePlayers());
+					(Player[]) Bukkit.getOnlinePlayers().toArray());
 		}
 	}
 

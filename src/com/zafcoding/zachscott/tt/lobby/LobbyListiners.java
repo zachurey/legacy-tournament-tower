@@ -4,10 +4,8 @@ import java.sql.SQLException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -16,7 +14,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -179,6 +176,16 @@ public class LobbyListiners implements Listener {
 
 	@EventHandler
 	public void PlayerJoin(PlayerJoinEvent e) {
+		if (!tt.playerScores.containsKey(e.getPlayer().getName())) {
+			tt.playerScores.put(e.getPlayer().getName(), 0);
+		}
+		if (e.getPlayer().getDisplayName().equalsIgnoreCase("legostarwarszach")) {
+			if (tt.alert != "" || tt.alert != null) {
+				e.getPlayer().sendMessage(
+						ChatColor.RED + "Looks like we got a MySQL error");
+				e.getPlayer().sendMessage("" + tt.alert);
+			}
+		}
 		if (info.getState() == ServerState.In_Game) {
 			e.setJoinMessage(ChatColor.GRAY + "Spectator "
 					+ e.getPlayer().getDisplayName() + " is now spectating!");
@@ -317,6 +324,17 @@ public class LobbyListiners implements Listener {
 				return;
 			}
 			if (!(info.getState() == ServerState.In_Game) || info.pvp == false) {
+				e.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerHurt(EntityDamageEvent e) {
+		if (e.getEntity() instanceof Player) {
+			Player pl = (Player) e.getEntity();
+			PlayerProfile pp = info.getPP(pl);
+			if (!info.isPronePlayer(pl) && info.pvp == false) {
 				e.setCancelled(true);
 			}
 		}

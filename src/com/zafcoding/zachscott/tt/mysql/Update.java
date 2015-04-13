@@ -38,33 +38,48 @@ public class Update {
 			System.out.println("Zach you screwed something up in the MySQL at "
 					+ e.getCause());
 			e.printStackTrace();
+			StringBuilder sss = new StringBuilder();
+			for(StackTraceElement ss : e.getStackTrace()){
+				sss.append(ss.toString());
+			}
+			tt.alert = sss.toString();
 		} catch (SQLException e) {
 			tt.mysql = false;
 			System.out.println("Zach you screwed something up in the MySQL at "
 					+ e.getCause());
 			e.printStackTrace();
+			StringBuilder sss = new StringBuilder();
+			for(StackTraceElement ss : e.getStackTrace()){
+				sss.append(ss.toString());
+			}
+			tt.alert = sss.toString();
 		}
 	}
 
 	private void Close() {
-		
+
 	}
 
-	public void updateStats() throws SQLException{
-		for(Player p : info.getPlayers()){
+	public void updateStats() throws SQLException {
+		for (Player p : info.getPlayers()) {
 			PlayerProfile pp = info.getPP(p);
 			setKills(p, getKill(p) + pp.getTotalKill());
 			setDeath(p, getDeath(p) + pp.getTotalDeaths());
+			if (pp.isWinner()) {
+				setWin(p, getWin(p) + 1);
+			} else {
+				setLose(p, getLose(p) + 1);
+			}
 		}
 		tt.c.close();
 	}
-	
+
 	private boolean aisPlayer(Player player) throws SQLException {
 		boolean is = false;
 		if (!tt.isMySQL()) {
 			return false;
 		}
-		if (!gotConnection()) {
+		if (!gotConnection() || tt.c == null) {
 			Connect();
 		}
 		Statement statement = tt.c.createStatement();
@@ -93,15 +108,15 @@ public class Update {
 		tt.debugMsg("Creating profile for " + player.getDisplayName() + "...");
 		Statement statement = tt.c.createStatement();
 		statement
-				.executeUpdate("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `MatchStart`, `MatchFinish`) VALUES ('"
+				.executeUpdate("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `Lost`) VALUES ('"
 						+ player.getUniqueId()
 						+ "', '"
 						+ player.getDisplayName().toString()
-						+ "', 0, 0, 0, 0, 0);");
-		tt.debugMsg("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `MatchStart`, `MatchFinish`) VALUES ('"
+						+ "', 0, 0, 0, 0);");
+		tt.debugMsg("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `Lost`) VALUES ('"
 				+ player.getUniqueId()
 				+ "', '"
-				+ player.getDisplayName().toString() + "', 0, 0, 0, 0, 0);");
+				+ player.getDisplayName().toString() + "', 0, 0, 0, 0);");
 		Close();
 	}
 
@@ -122,7 +137,7 @@ public class Update {
 		Close();
 	}
 
-	private int getKill(Player player) throws SQLException {
+	public int getKill(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -140,7 +155,7 @@ public class Update {
 		return get;
 	}
 
-	private void setKills(Player player, int i) throws SQLException {
+	public void setKills(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -155,7 +170,7 @@ public class Update {
 		Close();
 	}
 
-	private int getDeath(Player player) throws SQLException {
+	public int getDeath(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -173,7 +188,7 @@ public class Update {
 		return get;
 	}
 
-	private void setDeath(Player player, int i) throws SQLException {
+	public void setDeath(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -188,7 +203,7 @@ public class Update {
 		Close();
 	}
 
-	private int getWin(Player player) throws SQLException {
+	public int getWin(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -208,7 +223,7 @@ public class Update {
 		return get;
 	}
 
-	private void setWin(Player player, int i) throws SQLException {
+	public void setWin(Player player, int i) throws SQLException {
 		if (!tt.isMySQL()) {
 			return;
 		}
@@ -223,7 +238,56 @@ public class Update {
 		Close();
 	}
 
-	private int getMatchStart(Player player) throws SQLException {
+	/*
+	 * private int getMatchStart(Player player) throws SQLException { int get =
+	 * 0; if (!tt.isMySQL()) { return 0; } if (!gotConnection()) { Connect(); }
+	 * Statement statement = tt.c.createStatement(); ResultSet res = statement
+	 * .executeQuery("SELECT * FROM TTPlayer WHERE UUID = '" +
+	 * player.getUniqueId() + "';"); res.next(); get = res.getInt("MatchStart");
+	 * Close(); return get; }
+	 */
+
+	/*
+	 * private void setGamePlayed(Player player, int i) throws SQLException { if
+	 * (!tt.isMySQL()) { return; } if (!gotConnection()) { Connect(); }
+	 * Statement statement = tt.c.createStatement();
+	 * statement.executeUpdate("UPDATE `TTPlayer` SET `MatchStart`=" + i +
+	 * " WHERE UUID = '" + player.getUniqueId() + "'");
+	 * tt.debugMsg("UPDATE `TTPlayer` SET `MatchStart`=" + i + " WHERE UUID = '"
+	 * + player.getUniqueId() + "'"); Close(); }
+	 * 
+	 * private int getMatchFinish(Player player) throws SQLException { int get =
+	 * 0; if (!tt.isMySQL()) { return 0; } if (!gotConnection()) { Connect(); }
+	 * Statement statement = tt.c.createStatement(); ResultSet res = statement
+	 * .executeQuery("SELECT * FROM TTPlayer WHERE UUID = '" +
+	 * player.getUniqueId() + "';"); res.next(); get =
+	 * res.getInt("MatchFinish"); Close(); return get; }
+	 * 
+	 * private void setMatchFinish(Player player, int i) throws SQLException {
+	 * if (!tt.isMySQL()) { return; } if (!gotConnection()) { Connect(); }
+	 * Statement statement = tt.c.createStatement();
+	 * statement.executeUpdate("UPDATE `TTPlayer` SET `MatchFinish`=" + i +
+	 * " WHERE UUID = '" + player.getUniqueId() + "'");
+	 * tt.debugMsg("UPDATE `TTPlayer` SET `MatchFinish`=" + i +
+	 * " WHERE UUID = '" + player.getUniqueId() + "'"); Close(); }
+	 */
+
+	public void setLose(Player player, int i) throws SQLException {
+		if (!tt.isMySQL()) {
+			return;
+		}
+		if (!gotConnection()) {
+			Connect();
+		}
+		Statement statement = tt.c.createStatement();
+		statement.executeUpdate("UPDATE `TTPlayer` SET `Lost`=" + i
+				+ " WHERE UUID = '" + player.getUniqueId() + "'");
+		tt.debugMsg("UPDATE `TTPlayer` SET `Lost`=" + i + " WHERE UUID = '"
+				+ player.getUniqueId() + "'");
+		Close();
+	}
+
+	public int getLose(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
 			return 0;
@@ -236,57 +300,9 @@ public class Update {
 				.executeQuery("SELECT * FROM TTPlayer WHERE UUID = '"
 						+ player.getUniqueId() + "';");
 		res.next();
-		get = res.getInt("MatchStart");
+		get = res.getInt("Lost");
 		Close();
 		return get;
-	}
-
-	private void setMatchStart(Player player, int i) throws SQLException {
-		if (!tt.isMySQL()) {
-			return;
-		}
-		if (!gotConnection()) {
-			Connect();
-		}
-		Statement statement = tt.c.createStatement();
-		statement.executeUpdate("UPDATE `TTPlayer` SET `MatchStart`=" + i
-				+ " WHERE UUID = '" + player.getUniqueId() + "'");
-		tt.debugMsg("UPDATE `TTPlayer` SET `MatchStart`=" + i
-				+ " WHERE UUID = '" + player.getUniqueId() + "'");
-		Close();
-	}
-
-	private int getMatchFinish(Player player) throws SQLException {
-		int get = 0;
-		if (!tt.isMySQL()) {
-			return 0;
-		}
-		if (!gotConnection()) {
-			Connect();
-		}
-		Statement statement = tt.c.createStatement();
-		ResultSet res = statement
-				.executeQuery("SELECT * FROM TTPlayer WHERE UUID = '"
-						+ player.getUniqueId() + "';");
-		res.next();
-		get = res.getInt("MatchFinish");
-		Close();
-		return get;
-	}
-
-	private void setMatchFinish(Player player, int i) throws SQLException {
-		if (!tt.isMySQL()) {
-			return;
-		}
-		if (!gotConnection()) {
-			Connect();
-		}
-		Statement statement = tt.c.createStatement();
-		statement.executeUpdate("UPDATE `TTPlayer` SET `MatchFinish`=" + i
-				+ " WHERE UUID = '" + player.getUniqueId() + "'");
-		tt.debugMsg("UPDATE `TTPlayer` SET `MatchFinish`=" + i
-				+ " WHERE UUID = '" + player.getUniqueId() + "'");
-		Close();
 	}
 
 }

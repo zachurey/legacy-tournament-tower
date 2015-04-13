@@ -1,7 +1,5 @@
 package com.zafcoding.zachscott;
 
-import javax.swing.text.AbstractDocument.BranchElement;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -120,7 +118,7 @@ public class Thread implements Runnable {
 					return;
 				}
 			} else {
-				if (Bukkit.getOnlinePlayers().length <= 0) {
+				if (Bukkit.getOnlinePlayers().size() <= 0) {
 					if (!rel) {
 						Bukkit.getServer().reload();
 						rel = true;
