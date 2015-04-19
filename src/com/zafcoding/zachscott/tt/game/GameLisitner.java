@@ -4,11 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -66,6 +69,47 @@ public class GameLisitner implements Listener {
 					game.killCheck(tp);
 					displayPart(pp.getPlayer());
 					return;
+				}
+				EntityDamageEvent dc = e.getEntity().getLastDamageCause();
+				if (dc instanceof EntityDamageByEntityEvent) {
+					if (((EntityDamageByEntityEvent) dc).getDamager() instanceof Arrow) {
+						PlayerProfile pp = info.getPP(e.getEntity());
+						PlayerProfile tp = info
+								.getPP(e.getEntity().getKiller());
+						pp.reset();
+						pp.getPlayer().setExp(0f);
+						pp.getPlayer().getInventory().clear();
+						pp.setDeath(pp.getDeaths() + 1);
+						pp.setTotalDeath(pp.getTotalDeaths() + 1);
+						e.setDeathMessage(ChatColor.GOLD
+								+ ""
+								+ e.getEntity().getDisplayName()
+								+ ChatColor.WHITE
+								+ " Was "
+								+ ChatColor.RED
+								+ "Shot"
+								+ ChatColor.WHITE
+								+ " By "
+								+ ChatColor.GOLD
+								+ e.getEntity().getKiller().getDisplayName()
+								+ ChatColor.RED
+								+ " from "
+								+ ChatColor.WHITE
+								+ ""
+								+ ((int) tp.getPlayer().getLocation()
+										.distance(pp.getPlayer().getLocation()))
+								+ " blocks!");
+						e.setDroppedExp(0);
+						tp.setKills(tp.getKills() + 1);
+						tp.setTotalKill(tp.getTotalKill() + 1);
+						game.killCheck(tp);
+						displayPart(pp.getPlayer());
+						up.add(e.getEntity().getKiller());
+						pp.setCoins(pp.getCoins() + 1);
+						e.getEntity().getKiller()
+								.sendMessage(ChatColor.AQUA + "+1 Token");
+						return;
+					}
 				}
 				PlayerProfile pp = info.getPP(e.getEntity());
 				pp.reset();

@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 import com.zafcoding.zachscott.ParticleEffect.ParticleData;
 import com.zafcoding.zachscott.ReflectionUtils.PackageType;
 
+
 /**
  * <b>ParticleEffect Library</b>
  * <p>
