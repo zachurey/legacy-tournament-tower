@@ -334,7 +334,7 @@ public class LobbyListiners implements Listener {
 		if (e.getEntity() instanceof Player) {
 			Player pl = (Player) e.getEntity();
 			PlayerProfile pp = info.getPP(pl);
-			if (!info.isPronePlayer(pl) && info.pvp == false) {
+			if ((!info.isPronePlayer(pl) && info.pvp == false) || !tt.game.didi) {
 				e.setCancelled(true);
 			}
 		}

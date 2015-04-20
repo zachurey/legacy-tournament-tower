@@ -61,6 +61,12 @@ public class GameLisitner implements Listener {
 							+ " Was " + ChatColor.RED + "Butchered"
 							+ ChatColor.WHITE + " By " + ChatColor.GOLD
 							+ "Themselves");
+					if (pp.killbrag) {
+						info.broadCast(ChatColor.LIGHT_PURPLE + ""
+								+ ChatColor.ITALIC + ""
+								+ pp.getPlayer().getDisplayName()
+								+ " just ended their own kill streak!");
+					}
 					e.setDroppedExp(0);
 					PlayerProfile tp = info.getPP(e.getEntity().getKiller());
 					tp.setKills(0);
@@ -76,6 +82,13 @@ public class GameLisitner implements Listener {
 						PlayerProfile pp = info.getPP(e.getEntity());
 						PlayerProfile tp = info
 								.getPP(e.getEntity().getKiller());
+						if (pp.killbrag) {
+							info.broadCast(ChatColor.LIGHT_PURPLE + ""
+									+ ChatColor.ITALIC + ""
+									+ pp.getPlayer().getDisplayName()
+									+ " got shutdown by "
+									+ tp.getPlayer().getDisplayName());
+						}
 						pp.reset();
 						pp.getPlayer().setExp(0f);
 						pp.getPlayer().getInventory().clear();
@@ -103,6 +116,8 @@ public class GameLisitner implements Listener {
 						tp.setKills(tp.getKills() + 1);
 						tp.setTotalKill(tp.getTotalKill() + 1);
 						game.killCheck(tp);
+						tp.killinrow++;
+						killstreak(tp);
 						displayPart(pp.getPlayer());
 						up.add(e.getEntity().getKiller());
 						pp.setCoins(pp.getCoins() + 1);
@@ -112,6 +127,14 @@ public class GameLisitner implements Listener {
 					}
 				}
 				PlayerProfile pp = info.getPP(e.getEntity());
+				PlayerProfile tp = info.getPP(e.getEntity().getKiller());
+				if (pp.killbrag) {
+					info.broadCast(ChatColor.LIGHT_PURPLE + ""
+							+ ChatColor.ITALIC + ""
+							+ pp.getPlayer().getDisplayName()
+							+ " got shutdown by "
+							+ tp.getPlayer().getDisplayName());
+				}
 				pp.reset();
 				pp.getPlayer().setExp(0f);
 				pp.getPlayer().getInventory().clear();
@@ -123,8 +146,9 @@ public class GameLisitner implements Listener {
 						+ ChatColor.WHITE + " By " + ChatColor.GOLD
 						+ e.getEntity().getKiller().getDisplayName());
 				e.setDroppedExp(0);
-				PlayerProfile tp = info.getPP(e.getEntity().getKiller());
 				tp.setKills(tp.getKills() + 1);
+				tp.killinrow++;
+				killstreak(tp);
 				tp.setTotalKill(tp.getTotalKill() + 1);
 				game.killCheck(tp);
 				displayPart(pp.getPlayer());
@@ -137,6 +161,13 @@ public class GameLisitner implements Listener {
 				tt.debugMsg("The instance of the killer is "
 						+ e.getEntity().getKiller());
 				PlayerProfile pp = info.getPP(e.getEntity());
+				if (pp.killbrag) {
+					info.broadCast(ChatColor.LIGHT_PURPLE + ""
+							+ ChatColor.ITALIC + ""
+							+ pp.getPlayer().getDisplayName()
+							+ " got shutdown by " + ChatColor.RED + "Nature"
+							+ ChatColor.AQUA + "!!!");
+				}
 				pp.reset();
 				pp.getPlayer().getInventory().clear();
 				pp.setDeath(pp.getDeaths() + 1);
@@ -152,6 +183,17 @@ public class GameLisitner implements Listener {
 			e.setDeathMessage(e.getEntity().getDisplayName()
 					+ " somehow managed to kill himself, but do not worry! He did not die!");
 			e.getEntity().setHealth(40);
+		}
+	}
+
+	private void killstreak(PlayerProfile tp) {
+		if (!tp.killbrag) {
+			if (tp.killinrow >= 5) {
+				info.broadCast(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD
+						+ "" + tp.getPlayer().getDisplayName()
+						+ " is on a kill streak!");
+				tp.killbrag = true;
+			}
 		}
 	}
 

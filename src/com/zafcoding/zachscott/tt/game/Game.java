@@ -31,7 +31,7 @@ public class Game {
 	int i1 = 0;
 	int ii1 = 0;
 	boolean done1 = false;
-	boolean didi = false;
+	public boolean didi = false;
 	boolean did2 = false;
 	int smallcount = 15;
 

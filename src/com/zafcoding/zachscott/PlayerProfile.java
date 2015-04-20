@@ -28,10 +28,14 @@ public class PlayerProfile {
 	int powertime = 0;
 	boolean spec = false;
 	boolean winner = false;
+	public int killinrow = 0;
 	int coins = 0;
+	public boolean killbrag = false;
+	public ShopProfile sp;
 
 	public PlayerProfile(Player player) {
 		p = player;
+		sp = new ShopProfile(player.getUniqueId().toString());
 	}
 
 	public void setEffect(Effect eff) {
@@ -61,7 +65,9 @@ public class PlayerProfile {
 
 	public void reset() {
 		powerdid = false;
+		killbrag = false;
 		powertime = 0;
+		killinrow = 0;
 	}
 
 	public void enablePower(int i) {
