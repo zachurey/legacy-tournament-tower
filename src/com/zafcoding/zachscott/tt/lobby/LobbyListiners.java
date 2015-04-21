@@ -243,6 +243,15 @@ public class LobbyListiners implements Listener {
 	@EventHandler
 	public void onPlayerLeavae(PlayerQuitEvent e) {
 		if (info.getPP(e.getPlayer()) != null) {
+			if (info.getState() == ServerState.In_Game) {
+				try {
+					update.setLose(e.getPlayer(),
+							update.getLose(e.getPlayer()) + 1);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 			Player p = e.getPlayer();
 			info.removePlayer(p);
 			info.setCount(info.getPlayerCount() - 1);

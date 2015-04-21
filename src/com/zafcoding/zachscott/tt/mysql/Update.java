@@ -4,16 +4,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.zafcoding.zachscott.Info;
-import com.zafcoding.zachscott.PlayerProfile;
 import com.zafcoding.zachscott.TT;
 
 public class Update {
 
 	TT tt = TT.tt;
-	Info info = TT.info;
 
 	public boolean isPlayer(Player player) {
 		try {
@@ -21,6 +19,29 @@ public class Update {
 		} catch (SQLException e) {
 			return false;
 		}
+	}
+
+	public void startTimeOutEngine() {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(tt, new Runnable() {
+
+			@Override
+			public void run() {
+				if (gotConnection()) {
+					Statement statement;
+					try {
+						statement = tt.c.createStatement();
+						statement
+								.executeUpdate("INSERT INTO  `Random` (  `Hello` ) VALUES ('2')");
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+					Connect();
+				}
+			}
+		}, 20L, 20L);
+
 	}
 
 	public boolean gotConnection() {
@@ -38,40 +59,21 @@ public class Update {
 			System.out.println("Zach you screwed something up in the MySQL at "
 					+ e.getCause());
 			e.printStackTrace();
-			StringBuilder sss = new StringBuilder();
-			for(StackTraceElement ss : e.getStackTrace()){
-				sss.append(ss.toString());
-			}
-			tt.alert = sss.toString();
 		} catch (SQLException e) {
 			tt.mysql = false;
 			System.out.println("Zach you screwed something up in the MySQL at "
 					+ e.getCause());
 			e.printStackTrace();
-			StringBuilder sss = new StringBuilder();
-			for(StackTraceElement ss : e.getStackTrace()){
-				sss.append(ss.toString());
-			}
-			tt.alert = sss.toString();
 		}
 	}
 
 	private void Close() {
-
-	}
-
-	public void updateStats() throws SQLException {
-		for (Player p : info.getPlayers()) {
-			PlayerProfile pp = info.getPP(p);
-			setKills(p, getKill(p) + pp.getTotalKill());
-			setDeath(p, getDeath(p) + pp.getTotalDeaths());
-			if (pp.isWinner()) {
-				setWin(p, getWin(p) + 1);
-			} else {
-				setLose(p, getLose(p) + 1);
-			}
+		try {
+			tt.c.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		tt.c.close();
 	}
 
 	private boolean aisPlayer(Player player) throws SQLException {
@@ -79,7 +81,7 @@ public class Update {
 		if (!tt.isMySQL()) {
 			return false;
 		}
-		if (!gotConnection() || tt.c == null) {
+		if (!gotConnection()) {
 			Connect();
 		}
 		Statement statement = tt.c.createStatement();
@@ -108,12 +110,12 @@ public class Update {
 		tt.debugMsg("Creating profile for " + player.getDisplayName() + "...");
 		Statement statement = tt.c.createStatement();
 		statement
-				.executeUpdate("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `Lost`) VALUES ('"
+				.executeUpdate("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `MatchStart`, `MatchFinish`) VALUES ('"
 						+ player.getUniqueId()
 						+ "', '"
 						+ player.getDisplayName().toString()
 						+ "', 0, 0, 0, 0);");
-		tt.debugMsg("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `Lost`) VALUES ('"
+		tt.debugMsg("INSERT INTO TTPlayer (`UUID`, `DisplayName`, `Kills`, `Deaths`, `Wins`, `MatchStart`, `MatchFinish`) VALUES ('"
 				+ player.getUniqueId()
 				+ "', '"
 				+ player.getDisplayName().toString() + "', 0, 0, 0, 0);");
@@ -212,8 +214,6 @@ public class Update {
 			Connect();
 		}
 		Statement statement = tt.c.createStatement();
-		tt.debugMsg("SELECT * FROM TTPlayer WHERE UUID = '"
-				+ player.getUniqueId() + "';");
 		ResultSet res = statement
 				.executeQuery("SELECT * FROM TTPlayer WHERE UUID = '"
 						+ player.getUniqueId() + "';");
@@ -238,55 +238,6 @@ public class Update {
 		Close();
 	}
 
-	/*
-	 * private int getMatchStart(Player player) throws SQLException { int get =
-	 * 0; if (!tt.isMySQL()) { return 0; } if (!gotConnection()) { Connect(); }
-	 * Statement statement = tt.c.createStatement(); ResultSet res = statement
-	 * .executeQuery("SELECT * FROM TTPlayer WHERE UUID = '" +
-	 * player.getUniqueId() + "';"); res.next(); get = res.getInt("MatchStart");
-	 * Close(); return get; }
-	 */
-
-	/*
-	 * private void setGamePlayed(Player player, int i) throws SQLException { if
-	 * (!tt.isMySQL()) { return; } if (!gotConnection()) { Connect(); }
-	 * Statement statement = tt.c.createStatement();
-	 * statement.executeUpdate("UPDATE `TTPlayer` SET `MatchStart`=" + i +
-	 * " WHERE UUID = '" + player.getUniqueId() + "'");
-	 * tt.debugMsg("UPDATE `TTPlayer` SET `MatchStart`=" + i + " WHERE UUID = '"
-	 * + player.getUniqueId() + "'"); Close(); }
-	 * 
-	 * private int getMatchFinish(Player player) throws SQLException { int get =
-	 * 0; if (!tt.isMySQL()) { return 0; } if (!gotConnection()) { Connect(); }
-	 * Statement statement = tt.c.createStatement(); ResultSet res = statement
-	 * .executeQuery("SELECT * FROM TTPlayer WHERE UUID = '" +
-	 * player.getUniqueId() + "';"); res.next(); get =
-	 * res.getInt("MatchFinish"); Close(); return get; }
-	 * 
-	 * private void setMatchFinish(Player player, int i) throws SQLException {
-	 * if (!tt.isMySQL()) { return; } if (!gotConnection()) { Connect(); }
-	 * Statement statement = tt.c.createStatement();
-	 * statement.executeUpdate("UPDATE `TTPlayer` SET `MatchFinish`=" + i +
-	 * " WHERE UUID = '" + player.getUniqueId() + "'");
-	 * tt.debugMsg("UPDATE `TTPlayer` SET `MatchFinish`=" + i +
-	 * " WHERE UUID = '" + player.getUniqueId() + "'"); Close(); }
-	 */
-
-	public void setLose(Player player, int i) throws SQLException {
-		if (!tt.isMySQL()) {
-			return;
-		}
-		if (!gotConnection()) {
-			Connect();
-		}
-		Statement statement = tt.c.createStatement();
-		statement.executeUpdate("UPDATE `TTPlayer` SET `Lost`=" + i
-				+ " WHERE UUID = '" + player.getUniqueId() + "'");
-		tt.debugMsg("UPDATE `TTPlayer` SET `Lost`=" + i + " WHERE UUID = '"
-				+ player.getUniqueId() + "'");
-		Close();
-	}
-
 	public int getLose(Player player) throws SQLException {
 		int get = 0;
 		if (!tt.isMySQL()) {
@@ -303,6 +254,21 @@ public class Update {
 		get = res.getInt("Lost");
 		Close();
 		return get;
+	}
+
+	public void setLose(Player player, int i) throws SQLException {
+		if (!tt.isMySQL()) {
+			return;
+		}
+		if (!gotConnection()) {
+			Connect();
+		}
+		Statement statement = tt.c.createStatement();
+		statement.executeUpdate("UPDATE `TTPlayer` SET `Lost`=" + i
+				+ " WHERE UUID = '" + player.getUniqueId() + "'");
+		tt.debugMsg("UPDATE `TTPlayer` SET `Lost`=" + i + " WHERE UUID = '"
+				+ player.getUniqueId() + "'");
+		Close();
 	}
 
 }

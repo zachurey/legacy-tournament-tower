@@ -1,5 +1,7 @@
 package com.zafcoding.zachscott.tt.game;
 
+import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -74,6 +76,13 @@ public class GameLisitner implements Listener {
 					tp.setLevel(1);
 					game.killCheck(tp);
 					displayPart(pp.getPlayer());
+					try {
+						update.setDeath(pp.getPlayer(),
+								update.getDeath(pp.getPlayer()) + 1);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					return;
 				}
 				EntityDamageEvent dc = e.getEntity().getLastDamageCause();
@@ -123,6 +132,15 @@ public class GameLisitner implements Listener {
 						pp.setCoins(pp.getCoins() + 1);
 						e.getEntity().getKiller()
 								.sendMessage(ChatColor.AQUA + "+1 Token");
+						try {
+							update.setDeath(pp.getPlayer(),
+									update.getDeath(pp.getPlayer()) + 1);
+							update.setKills(tp.getPlayer(),
+									update.getKill(tp.getPlayer()) + 1);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						return;
 					}
 				}
@@ -156,6 +174,15 @@ public class GameLisitner implements Listener {
 				pp.setCoins(pp.getCoins() + 1);
 				e.getEntity().getKiller()
 						.sendMessage(ChatColor.AQUA + "+1 Token");
+				try {
+					update.setDeath(pp.getPlayer(),
+							update.getDeath(pp.getPlayer()) + 1);
+					update.setKills(tp.getPlayer(),
+							update.getKill(tp.getPlayer()) + 1);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				return;
 			} else {
 				tt.debugMsg("The instance of the killer is "
@@ -177,6 +204,13 @@ public class GameLisitner implements Listener {
 						+ " Was " + ChatColor.RED + "Butchered"
 						+ ChatColor.WHITE + " By " + ChatColor.GOLD + "Nature!");
 				displayPart(pp.getPlayer());
+				try {
+					update.setDeath(pp.getPlayer(),
+							update.getDeath(pp.getPlayer()) + 1);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				return;
 			}
 		} else {

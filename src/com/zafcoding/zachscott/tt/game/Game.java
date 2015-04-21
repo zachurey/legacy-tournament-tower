@@ -83,6 +83,7 @@ public class Game {
 		info.setState(ServerState.In_Game);
 		info.cangg = false;
 		info.cangl = false;
+		update.startTimeOutEngine();
 		for (Player pp : info.getPlayers()) {
 			/*
 			 * try { update.setMatchStart(pp, update.getMatchStart(pp) + 1); }
@@ -136,6 +137,12 @@ public class Game {
 		PlayerProfile mostk = null;
 		PlayerProfile mostd = null;
 		tt.debugMsg("The game is ending!");
+		try {
+			update.setWin(winner, update.getWin(winner) + 1);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		/*
 		 * try { update.updateStats(); } catch (SQLException e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); }
@@ -153,17 +160,18 @@ public class Game {
 				+ "!");
 		info.broadCast(ChatColor.GREEN + "Do /gg to be a good sport!");
 		for (Player ppp : info.getPlayers()) {
-			/*
-			 * try { update.setMatchFinish(ppp, update.getMatchFinish(ppp) + 1);
-			 * } catch (SQLException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); }
-			 */
 			if (ppp == winner) {
 				PlayerProfile pq = info.getPP(ppp);
 				pq.setWinner(true);
 				ppp.teleport(tt.getSpawn(info.world, 5, 1));
 			} else {
 				ppp.teleport(ppp.getWorld().getSpawnLocation());
+				try {
+					update.setLose(ppp, update.getLose(winner) + 1);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			PlayerProfile pq = info.getPP(ppp);
 			PlayerProfile ppq = null;
@@ -204,12 +212,6 @@ public class Game {
 							for (Player ooo : Bukkit.getOnlinePlayers()) {
 								ooo.kickPlayer(ChatColor.RED
 										+ "The Game is over! Rejoin in a moment to play again!");
-							}
-							try {
-								update.updateStats();
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
 							}
 							Bukkit.getScheduler().cancelTask(ii1);
 							Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
