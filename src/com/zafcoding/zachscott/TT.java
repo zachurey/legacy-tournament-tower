@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -52,7 +53,7 @@ public class TT extends JavaPlugin {
 	public static ParticleEffect pe;
 	// public static EffectLib lib;
 	// public static EffectManager man;
-	boolean debug = false;
+	boolean debug = true;
 	public boolean mysql = true;
 	public static ArrayList<String> vips = new ArrayList<String>();
 	public static ArrayList<String> bannedplayers = new ArrayList<String>();
@@ -107,6 +108,24 @@ public class TT extends JavaPlugin {
 		loadConfiguration();
 		Random rand = new Random();
 		// int map = rand.nextInt(3);
+		try {
+			tt.c = tt.MySQL.openConnection();
+		} catch (ClassNotFoundException e) {
+			tt.mysql = false;
+			System.out.println("Zach you screwed something up in the MySQL at "
+					+ e.getCause());
+			e.printStackTrace();
+		} catch (SQLException e) {
+			tt.mysql = false;
+			System.out.println("Zach you screwed something up in the MySQL at "
+					+ e.getCause());
+			e.printStackTrace();
+		}catch (NullPointerException e){
+			tt.mysql = false;
+			System.out.println("Zach you screwed something up in the MySQL at "
+					+ e.getCause());
+			e.printStackTrace();
+		}
 		int map = 0;
 		System.out.println("Rand is " + map);
 		if (map == 0) {
@@ -130,6 +149,7 @@ public class TT extends JavaPlugin {
 			System.out.println("Set to IceTemple");
 		}
 		startDebugcheck();
+		update.startTimeOutEngine();
 		System.out.print("[TT] Enabled Tornament Tower v." + version);
 	}
 
@@ -572,6 +592,12 @@ public class TT extends JavaPlugin {
 							if (p.isOp() || p.hasPermission("tt.bubble")) {
 								gle.displayPart(p);
 								p.sendMessage(ChatColor.DARK_AQUA + "Bubbles!");
+								return true;
+							}
+						}if (args[0].equalsIgnoreCase("starttime")) {
+							if (p.isOp()) {
+								update.startTimeOutEngine();
+								p.sendMessage(ChatColor.DARK_AQUA + "Did it!");
 								return true;
 							}
 						}

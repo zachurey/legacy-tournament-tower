@@ -13,6 +13,8 @@ public class Update {
 
 	TT tt = TT.tt;
 
+	int hello = 0;
+
 	public boolean isPlayer(Player player) {
 		try {
 			return aisPlayer(player);
@@ -31,7 +33,9 @@ public class Update {
 					try {
 						statement = tt.c.createStatement();
 						statement
-								.executeUpdate("INSERT INTO  `Random` (  `Hello` ) VALUES ('2')");
+								.executeUpdate("INSERT INTO  `Random` (  `Hello` ) VALUES ('"
+										+ hello + "')");
+						aond();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -42,6 +46,10 @@ public class Update {
 			}
 		}, 20L, 20L);
 
+	}
+
+	private void aond() {
+		hello++;
 	}
 
 	public boolean gotConnection() {
@@ -68,12 +76,6 @@ public class Update {
 	}
 
 	private void Close() {
-		try {
-			tt.c.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private boolean aisPlayer(Player player) throws SQLException {

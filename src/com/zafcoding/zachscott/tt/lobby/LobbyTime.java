@@ -22,12 +22,10 @@ public class LobbyTime {
 				pp.setFoodLevel(20);
 				pp.setFireTicks(0);
 			}
-			tt.debugMsg("The Heart Beat has run! (1)");
 			if (info.getPlayerCount() <= tt.getMaxPlayer()
 					&& !(info.getPlayerCount() <= 0)) {
-				tt.debugMsg("There are less than or more than 30 players on!");
+
 				if (info.getTime() <= tt.getLobbyTime()) {
-					tt.debugMsg("The time is less than or equal 120!");
 					dotime();
 				}
 			}
@@ -35,8 +33,7 @@ public class LobbyTime {
 	}
 
 	private void dotime() {
-		tt.debugMsg("The time has run! [" + info.getTime() + "]");
-		if(info.getPlayerCount() >= 15 && info.getTime() > 60){
+		if (info.getPlayerCount() >= 15 && info.getTime() > 60) {
 			info.setTime(60);
 			info.broadCast(ChatColor.BLUE + "Time skipping to 60 seconds!");
 		}
@@ -51,7 +48,8 @@ public class LobbyTime {
 			info.broadCast(ChatColor.AQUA + "(At least " + tt.getMinPlayer()
 					+ " players are needed to start the game)");
 			info.broadCast("");
-		}if(info.getTime()<=10){
+		}
+		if (info.getTime() <= 10) {
 			info.broadCast(ChatColor.AQUA + "" + info.getTime()
 					+ " seconds till the game starts!");
 		}

@@ -83,7 +83,6 @@ public class Game {
 		info.setState(ServerState.In_Game);
 		info.cangg = false;
 		info.cangl = false;
-		update.startTimeOutEngine();
 		for (Player pp : info.getPlayers()) {
 			/*
 			 * try { update.setMatchStart(pp, update.getMatchStart(pp) + 1); }
