@@ -17,8 +17,6 @@ public class PlayerProfile {
 	Player p;
 	int deaths = 0;
 	int kills = 0;
-	int totalkill = 0;
-	int totaldeath = 0;
 	int level = 1;
 	Effect ef;
 	boolean ggg = false;
@@ -28,14 +26,19 @@ public class PlayerProfile {
 	int powertime = 0;
 	boolean spec = false;
 	boolean winner = false;
-	public int killinrow = 0;
 	int coins = 0;
 	public boolean killbrag = false;
-	public ShopProfile sp;
+	//public ShopProfile sp;
+	
+	//For stats
+	public int shots = 0;
+	int totalkill = 0;
+	int totaldeath = 0;
+	public int killinrow = 0;
 
 	public PlayerProfile(Player player) {
 		p = player;
-		sp = new ShopProfile(player.getUniqueId().toString());
+		//sp = new ShopProfile(player.getUniqueId().toString());
 	}
 
 	public void setEffect(Effect eff) {

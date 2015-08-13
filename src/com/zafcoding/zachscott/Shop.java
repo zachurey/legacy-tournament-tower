@@ -19,7 +19,7 @@ public class Shop implements Listener {
 
 	TT tt = TT.tt;
 
-	public void oi(Player pl) {
+	/*public void oi(Player pl) {
 		ShopProfile sp = tt.info.getPP(pl).sp;
 		Inventory inv = Bukkit
 				.createInventory(null, 18, ChatColor.RED + "Shop");
@@ -33,6 +33,10 @@ public class Shop implements Listener {
 		}
 		setName(inv, Material.STONE_SWORD, ChatColor.DARK_RED + "Stone Sword",
 				sword, 1);
+	}*/
+	
+	public void oi(Player player){
+		
 	}
 
 	private void setName(Inventory inv, Material ma, String name,

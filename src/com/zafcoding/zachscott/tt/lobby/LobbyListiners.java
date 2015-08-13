@@ -217,22 +217,7 @@ public class LobbyListiners implements Listener {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		try {
-			if (update.isPlayer(e.getPlayer()) == true) {
-				tt.debugMsg("(1) MySQL player join for player " + e.getPlayer()
-						+ " called!");
-				update.updateDisplayName(e.getPlayer());
-				tt.debugMsg("Updated the username for "
-						+ e.getPlayer().getDisplayName());
-				return;
-			}
-			tt.debugMsg("(2) MySQL player join for player " + e.getPlayer()
-					+ " called!");
-			update.addPlayer(e.getPlayer());
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		update.playerJoin(e.getPlayer());
 	}
 
 	private void sendSpawn(Player player) throws InterruptedException {

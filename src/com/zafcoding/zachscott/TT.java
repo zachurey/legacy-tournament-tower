@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -21,26 +22,21 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.zafcoding.zachscott.Info.ServerState;
 import com.zafcoding.zachscott.tt.game.Game;
 import com.zafcoding.zachscott.tt.game.GameLisitner;
 import com.zafcoding.zachscott.tt.game.PowerUp;
+import com.zafcoding.zachscott.tt.game.SnowBall;
 import com.zafcoding.zachscott.tt.lobby.LobbyListiners;
 import com.zafcoding.zachscott.tt.mysql.MySQL;
 import com.zafcoding.zachscott.tt.mysql.Update;
-/*import lilypad.client.connect.api.Connect;
- import lilypad.client.connect.api.ConnectSettings;
- import lilypad.client.connect.api.request.impl.RedirectRequest;
- import lilypad.client.connect.api.result.FutureResultListener;
- import lilypad.client.connect.api.result.Result;
- import lilypad.client.connect.api.result.StatusCode;
- import lilypad.client.connect.api.result.impl.RedirectResult;*/
 
 public class TT extends JavaPlugin {
 
-	double version = 2.6;
+	double version = 3.0;
 	public String pre = ChatColor.GOLD + "[TT]";
 	public static TT tt;
 	public static Info info;
@@ -72,6 +68,7 @@ public class TT extends JavaPlugin {
 	public static HashMap<String, Integer> playerScores = new HashMap();
 	public static String alert = null;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onEnable() {
 		System.out.print("[TT] Enabling Tornament Tower v." + version);
@@ -83,73 +80,31 @@ public class TT extends JavaPlugin {
 		updatePlayer = new UpdatePlayer();
 		thread = new Thread();
 		gle = new GameLisitner();
-		// lib = EffectLib.instance();
-		// man = new EffectManager(lib);
-		/*
-		 * this.connect = ((Connect) getServer().getServicesManager()
-		 * .getRegistration(Connect.class).getProvider());
-		 */
-		// settings = connect.getSettings();
-		// username = settings.getUsername();
-		// password = settings.getPassword();
-		// outboundAddress = settings.getOutboundAddress();
 		try {
 			updatePlayer.updateMods();
-			// updatePlayer.updateVIPs();
-			updatePlayer.updateScores(true);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		getServer().getPluginManager().registerEvents(new LobbyListiners(),
 				this);
+		getServer().getPluginManager().registerEvents(new SnowBall(),
+				this);
 		getServer().getPluginManager().registerEvents(gle, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, thread, 20, 20);
 		loadConfiguration();
 		Random rand = new Random();
-		// int map = rand.nextInt(3);
-		try {
-			tt.c = tt.MySQL.openConnection();
-		} catch (ClassNotFoundException e) {
-			tt.mysql = false;
-			System.out.println("Zach you screwed something up in the MySQL at "
-					+ e.getCause());
-			e.printStackTrace();
-		} catch (SQLException e) {
-			tt.mysql = false;
-			System.out.println("Zach you screwed something up in the MySQL at "
-					+ e.getCause());
-			e.printStackTrace();
-		}catch (NullPointerException e){
-			tt.mysql = false;
-			System.out.println("Zach you screwed something up in the MySQL at "
-					+ e.getCause());
-			e.printStackTrace();
+		java.util.List<String> wlist = (java.util.List<String>) getConfig()
+				.getList("Worlds");
+		int map = rand.nextInt(wlist.size());
+		while (wlist.get(map) == null) {
+			map = rand.nextInt(wlist.size());
 		}
-		int map = 0;
-		System.out.println("Rand is " + map);
-		if (map == 0) {
-			info.world = "IceTemple";
-			info.worldcreate = "SpinTown";
-			System.out.println("Set to IceTemple");
-		}
-		if (map == 1) {
-			info.world = "Splinterz";
-			info.worldcreate = "8_BitHer0 & ChopChop237";
-			System.out.println("Set to Splinterz");
-		}
-		if (map == 2) {
-			info.world = "Villiage";
-			info.worldcreate = "ChopChop27";
-			System.out.println("Set to Villiage");
-		}
-		if (info.world.equals("") || info.worldcreate.equals("")) {
-			info.world = "IceTemple";
-			info.worldcreate = "SpinTown";
-			System.out.println("Set to IceTemple");
-		}
+		String[] ty = wlist.get(map).split(",");
+		info.world = ty[0];
+		info.world = ty[1];
+		System.out.println("Set to " + ty[0] + " by " + ty[1]);
 		startDebugcheck();
-		update.startTimeOutEngine();
 		System.out.print("[TT] Enabled Tornament Tower v." + version);
 	}
 
@@ -173,13 +128,13 @@ public class TT extends JavaPlugin {
 		if (this.getConfig().get("Config.exsits") == null) {
 			String[] list = { "120", "90", "60", "30", "15", "10", "9", "8",
 					"7", "6", "5", "4", "3", "2", "1" };
-			List ll = new List();
+			String[] wlist = { "IceTemple,Spintown" };
 			this.getConfig().set("Config.exsits", true);
 			this.getConfig().set("MinPlayers", 8);
 			this.getConfig().set("MaxPlayers", 30);
 			this.getConfig().set("PotionTime", 25);
 			this.getConfig().set("LobbyTime", 120);
-			this.getConfig().set("Worlds", "IceTemple");
+			this.getConfig().set("Worlds", wlist);
 			this.getConfig().set("Goodluck1",
 					"%player% wishes all a good game and all a good night!");
 			this.getConfig().set("Goodluck2",
@@ -392,12 +347,6 @@ public class TT extends JavaPlugin {
 				p.sendMessage(ChatColor.GOLD + "===Tournament Tower:"
 						+ ChatColor.WHITE + p.getDisplayName() + ChatColor.GOLD
 						+ "===");
-				/*
-				 * try { p.sendMessage(ChatColor.AQUA + "Win Played Ratio: " +
-				 * update.getWin(p) / update.getMatchFinish(p)); } catch
-				 * (SQLException e) { p.sendMessage(ChatColor.AQUA +
-				 * "Kill Death Ratio: 0.0"); e.printStackTrace(); }
-				 */
 			}
 			if (label.equalsIgnoreCase("bane")) {
 				if (!mods.containsKey(p.getDisplayName())) {
@@ -594,39 +543,22 @@ public class TT extends JavaPlugin {
 								p.sendMessage(ChatColor.DARK_AQUA + "Bubbles!");
 								return true;
 							}
-						}if (args[0].equalsIgnoreCase("starttime")) {
-							if (p.isOp()) {
-								update.startTimeOutEngine();
-								p.sendMessage(ChatColor.DARK_AQUA + "Did it!");
-								return true;
-							}
 						}
 						if (args[0].equalsIgnoreCase("skip")) {
 							if (p.hasPermission("tt.forceskip")) {
 								Random rand = new Random();
-								int map = rand.nextInt(3);
-								System.out.println("Rand is " + map);
-								if (map == 0) {
-									info.world = "IceTemple";
-									info.worldcreate = "SpinTown";
-									System.out.println("Set to IceTemple");
+								java.util.List<String> wlist = (java.util.List<String>) getConfig()
+										.getList("Worlds");
+								int map = rand.nextInt(wlist.size());
+								while (wlist.get(map) == null
+										&& wlist.get(map).contains(info.world)) {
+									map = rand.nextInt(wlist.size());
 								}
-								if (map == 1) {
-									info.world = "Splinterz";
-									info.worldcreate = "8_BitHer0 & ChopChop237";
-									System.out.println("Set to Splinterz");
-								}
-								if (map >= 2) {
-									info.world = "Villiage";
-									info.worldcreate = "ChopChop27";
-									System.out.println("Set to Villiage");
-								}
-								if (info.world.equals("")
-										|| info.worldcreate.equals("")) {
-									info.world = "IceTemple";
-									info.worldcreate = "SpinTown";
-									System.out.println("Set to IceTemple");
-								}
+								String[] ty = wlist.get(map).split(",");
+								info.world = ty[0];
+								info.world = ty[1];
+								System.out.println("Set to " + ty[0] + " by "
+										+ ty[1]);
 								p.sendMessage(ChatColor.GRAY
 										+ "Map has been set to " + info.world
 										+ " (Made by " + info.worldcreate + ")");
@@ -701,55 +633,6 @@ public class TT extends JavaPlugin {
 								return true;
 							}
 						}
-						if (args[0].equalsIgnoreCase("upit")) {
-							if (p.isOp() || p.hasPermission("tt.up")) {
-								updatePlayer.add(p);
-								p.sendMessage(ChatColor.GRAY
-										+ "Added coin! Score is now: "
-										+ playerScores.get(p.getName()));
-								return true;
-							}
-						}
-						if (args[0].equalsIgnoreCase("lower")) {
-							if (p.isOp() || p.hasPermission("tt.down")) {
-								updatePlayer.subtract(p);
-								p.sendMessage(ChatColor.GRAY
-										+ "Subtracted coin! Score is now: "
-										+ playerScores.get(p.getName()));
-								return true;
-							}
-						}
-						if (args[0].equalsIgnoreCase("saveit")) {
-							if (p.isOp() || p.hasPermission("tt.save")) {
-								try {
-									updatePlayer.saveScores();
-									p.sendMessage(ChatColor.GRAY
-											+ "Saved the scores!");
-								} catch (IOException e) {
-									p.sendMessage(ChatColor.RED
-											+ "Error! Check the log!");
-									e.printStackTrace();
-								}
-								return true;
-							}
-						}
-						if (args[0].equalsIgnoreCase("resetkit")) {
-							p.getInventory().clear();
-							int i = game.getRandom(1, 2);
-							if (i == 1) {
-								p.getInventory().addItem(
-										new ItemStack(Material.WOOD_SWORD));
-							} else {
-								p.getInventory().addItem(
-										new ItemStack(Material.BOW));
-								p.getInventory().addItem(
-										new ItemStack(Material.ARROW, 64));
-							}
-							p.sendMessage(pre
-									+ " Your kit has been reset! (The int was "
-									+ i + ")");
-							return true;
-						}
 					}
 				}
 				if (args.length == 2) {
@@ -784,6 +667,22 @@ public class TT extends JavaPlugin {
 									+ info.getPlayerCount());
 							return true;
 						}
+						if (args[0].equalsIgnoreCase("levelup")) {
+							Player pl = Bukkit.getPlayer(args[1]);
+							if (Bukkit.getPlayer(args[1]) == null) {
+								p.sendMessage(ChatColor.RED
+										+ "Could not find player '" + args[1]
+										+ "'");
+								return true;
+							} else {
+								info.getPP(pl).setKills(5);
+								tt.game.killCheck(info.getPP(pl));
+								p.sendMessage(ChatColor.GREEN
+										+ "Leveled up player "
+										+ pl.getPlayer().getDisplayName());
+								return true;
+							}
+						}
 						if (args[0].equalsIgnoreCase("setkill")) {
 							PlayerProfile pp = info.getPP(p);
 							pp.setKills(Integer.parseInt(args[1]));
@@ -805,6 +704,60 @@ public class TT extends JavaPlugin {
 									+ " The deaths for the player "
 									+ pp.getPlayer().getDisplayName()
 									+ " has been set to " + pp.getDeaths());
+							return true;
+						}
+						if (args[0].equalsIgnoreCase("add")) {
+							if (p.isOp() || p.hasPermission("tt.up")) {
+								int sd = 0;
+								try {
+									sd = Integer.parseInt(args[1]);
+								} catch (Exception e) {
+									p.sendMessage(ChatColor.RED + "'" + args[1]
+											+ "' is not a valid number!");
+								}
+								try {
+									update.setTokens(p, sd, true);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+								p.sendMessage(ChatColor.GRAY + "Added " + sd
+										+ "coins! Score is now: "
+										+ playerScores.get(p.getName()));
+								return true;
+							}
+						}
+					}
+				}
+				if (args.length == 3) {
+					if (args[0].equalsIgnoreCase("add")) {
+						if (p.isOp() || p.hasPermission("tt.up")) {
+							int sd = 0;
+							Player tp = Bukkit.getPlayer(args[2]);
+							if (tp == null) {
+								p.sendMessage(ChatColor.RED
+										+ "Could not find player '" + args[2]
+										+ "'");
+								p.sendMessage(ChatColor.RED
+										+ "If the player is offline, please contact Zach if action is needed.");
+								return true;
+							}
+							try {
+								sd = Integer.parseInt(args[1]);
+							} catch (Exception e) {
+								p.sendMessage(ChatColor.RED + "'" + args[1]
+										+ "' is not a valid number!");
+							}
+							try {
+								update.setTokens(p, sd, true);
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+							p.sendMessage(ChatColor.GRAY + "Added " + sd
+									+ "coins for player " + tp.getDisplayName()
+									+ "! Tokens is now: "
+									+ info.getPP(tp).getCoins());
+							tp.sendMessage(ChatColor.LIGHT_PURPLE + ""
+									+ ChatColor.BOLD + "+" + sd + " Tokens");
 							return true;
 						}
 					}
@@ -1027,10 +980,6 @@ public class TT extends JavaPlugin {
 		return mysql;
 	}
 
-	public void updateVIP() {
-
-	}
-
 	/*
 	 * public static void sendPlayerToServer(String server, Player player) {
 	 * redirectRequest(server, player); }
@@ -1072,6 +1021,18 @@ public class TT extends JavaPlugin {
 		 * System.out.println("Set to IceTemple"); } startDebugcheck();
 		 * reloadConfig();
 		 */
+	}
+
+	public ItemStack renameItem(Material inv, String name,
+			java.util.List<String> lore) {
+		ItemStack is = new ItemStack(inv);
+		ItemMeta m = is.getItemMeta();
+		if (name != null)
+			m.setDisplayName(name);
+		if (lore != null)
+			m.setLore(lore);
+		is.setItemMeta(m);
+		return is;
 	}
 
 }

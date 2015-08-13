@@ -76,13 +76,7 @@ public class GameLisitner implements Listener {
 					tp.setLevel(1);
 					game.killCheck(tp);
 					displayPart(pp.getPlayer());
-					try {
-						update.setDeath(pp.getPlayer(),
-								update.getDeath(pp.getPlayer()) + 1);
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					pp.setTotalDeath(pp.getTotalDeaths() + 1);
 					return;
 				}
 				EntityDamageEvent dc = e.getEntity().getLastDamageCause();
@@ -128,19 +122,16 @@ public class GameLisitner implements Listener {
 						tp.killinrow++;
 						killstreak(tp);
 						displayPart(pp.getPlayer());
-						up.add(e.getEntity().getKiller());
-						pp.setCoins(pp.getCoins() + 1);
-						e.getEntity().getKiller()
-								.sendMessage(ChatColor.AQUA + "+1 Token");
 						try {
-							update.setDeath(pp.getPlayer(),
-									update.getDeath(pp.getPlayer()) + 1);
-							update.setKills(tp.getPlayer(),
-									update.getKill(tp.getPlayer()) + 1);
+							update.addTokens(tp.getPlayer(), 1, true);
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
+						e.getEntity().getKiller()
+								.sendMessage(ChatColor.AQUA + "+1 Token");
+						pp.setTotalDeath(pp.getTotalDeaths() + 1);
+						tp.setTotalDeath(tp.getTotalDeaths() + 1);
 						return;
 					}
 				}
@@ -170,19 +161,16 @@ public class GameLisitner implements Listener {
 				tp.setTotalKill(tp.getTotalKill() + 1);
 				game.killCheck(tp);
 				displayPart(pp.getPlayer());
-				up.add(e.getEntity().getKiller());
-				pp.setCoins(pp.getCoins() + 1);
-				e.getEntity().getKiller()
-						.sendMessage(ChatColor.AQUA + "+1 Token");
 				try {
-					update.setDeath(pp.getPlayer(),
-							update.getDeath(pp.getPlayer()) + 1);
-					update.setKills(tp.getPlayer(),
-							update.getKill(tp.getPlayer()) + 1);
+					update.addTokens(tp.getPlayer(), 1, true);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				e.getEntity().getKiller()
+						.sendMessage(ChatColor.AQUA + "+1 Token");
+				pp.setTotalDeath(pp.getTotalDeaths() + 1);
+				tp.setTotalDeath(tp.getTotalDeaths() + 1);
 				return;
 			} else {
 				tt.debugMsg("The instance of the killer is "
@@ -204,13 +192,7 @@ public class GameLisitner implements Listener {
 						+ " Was " + ChatColor.RED + "Butchered"
 						+ ChatColor.WHITE + " By " + ChatColor.GOLD + "Nature!");
 				displayPart(pp.getPlayer());
-				try {
-					update.setDeath(pp.getPlayer(),
-							update.getDeath(pp.getPlayer()) + 1);
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				pp.setTotalDeath(pp.getTotalDeaths() + 1);
 				return;
 			}
 		} else {

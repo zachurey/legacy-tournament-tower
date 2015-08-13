@@ -26,7 +26,6 @@ public class Game {
 
 	TT tt = TT.tt;
 	Info info = TT.info;
-	Update update = TT.update;
 	UpdatePlayer up = TT.updatePlayer;
 	int i1 = 0;
 	int ii1 = 0;
@@ -136,15 +135,12 @@ public class Game {
 		PlayerProfile mostk = null;
 		PlayerProfile mostd = null;
 		tt.debugMsg("The game is ending!");
-		try {
-			update.setWin(winner, update.getWin(winner) + 1);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		/*
-		 * try { update.updateStats(); } catch (SQLException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); }
+		 * try { update.setWin(winner, update.getWin(winner) + 1); } catch
+		 * (SQLException e1) { // TODO Auto-generated catch block
+		 * e1.printStackTrace(); } try { update.updateStats(); } catch
+		 * (SQLException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); }
 		 */
 		/*
 		 * try { int wincount = update.getWin(winner); update.setWin(winner,
@@ -165,12 +161,12 @@ public class Game {
 				ppp.teleport(tt.getSpawn(info.world, 5, 1));
 			} else {
 				ppp.teleport(ppp.getWorld().getSpawnLocation());
-				try {
+				/*try {
 					update.setLose(ppp, update.getLose(winner) + 1);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				}*/
 			}
 			PlayerProfile pq = info.getPP(ppp);
 			PlayerProfile ppq = null;
@@ -194,11 +190,11 @@ public class Game {
 				+ ChatColor.AQUA + mostd.getPlayer().getDisplayName() + " ("
 				+ mostd.getTotalDeaths() + ")");
 		info.broadCast(ChatColor.YELLOW + "============");
-		try {
+		/*try {
 			up.saveScores();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		ii1 = Bukkit.getServer().getScheduler()
 				.scheduleSyncRepeatingTask(tt, new Runnable() {
 					@Override
@@ -227,11 +223,8 @@ public class Game {
 
 	// Took me 42 minutes to remember to put the return in there
 	public void killCheck(PlayerProfile tp) {
-		tt.debugMsg("killCheck called!");
 		if (tp.getKills() >= 5) {
-			tt.debugMsg("The player has " + tp.getKills());
 			if (tp.getLevel() == 1) {
-				tt.debugMsg("The player be level 1!");
 				info.p1--;
 				info.p2++;
 				tp.setKills(0);
